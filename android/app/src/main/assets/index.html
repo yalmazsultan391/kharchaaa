@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="navy">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kharchaaa — Har rupaya, hisaab ke saath</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root, [data-theme="emerald"]{
+    --h1:#064E3B; --h2:#065F46; --accent:#D4AF37; --accent2:#B8860B;
+    --bg:#EFFAF3; --card:#FFFFFF; --text:#052E22; --muted:#5B7A6E;
+    --green:#059669; --red:#DC2626; --amber:#D97706; --line:#D8E8DD;
+    --chip:#D1FAE5; --shadow:0 6px 18px rgba(6,78,59,.10);
+  }
+  [data-theme="navy"]{
+    --h1:#0A2463; --h2:#12275E; --accent:#D4AF37; --accent2:#B8860B;
+    --bg:#EFF3FA; --card:#FFFFFF; --text:#0B1E3F; --muted:#5B6B8C;
+    --green:#059669; --red:#DC2626; --amber:#D97706; --line:#D5DEEE;
+    --chip:#DBEAFE; --shadow:0 6px 18px rgba(10,36,99,.12);
+  }
+  [data-theme="violet"]{
+    --h1:#2E1065; --h2:#4C1D95; --accent:#C4B5FD; --accent2:#A78BFA;
+    --bg:#F5F3FF; --card:#FFFFFF; --text:#1E1033; --muted:#6B6390;
+    --green:#059669; --red:#DC2626; --amber:#D97706; --line:#E2DDF5;
+    --chip:#EDE9FE; --shadow:0 6px 18px rgba(46,16,101,.12);
+  }
+  [data-theme="light"]{
+    --h1:#FFFFFF; --h2:#F4F4F4; --accent:#D4AF37; --accent2:#B8860B;
+    --bg:#FFFFFF; --card:#F8F9FA; --text:#1A1A1A; --muted:#6B7280;
+    --green:#059669; --red:#DC2626; --amber:#D97706; --line:#E5E7EB;
+    --chip:#FEF3C7; --shadow:0 6px 18px rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+  header{background:linear-gradient(135deg,var(--h1),var(--h2));color:#fff;padding:18px 16px 14px;position:sticky;top:0;z-index:20;box-shadow:var(--shadow)}
+  [data-theme="light"] header{color:var(--text);border-bottom:2px solid var(--accent)}
+  .head-row{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:12px}
+  .logo{width:46px;height:46px;border-radius:14px;background:var(--accent);color:#1A1A1A;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;flex:0 0 auto}
+  .head-titles{flex:1;min-width:0}
+  .head-titles h1{margin:0;font-size:26px;letter-spacing:.3px}
+  .head-titles p{margin:2px 0 0;font-size:13px;opacity:.85}
+  .icon-btn{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:12px;padding:8px 10px;cursor:pointer;font-size:13px}
+  [data-theme="light"] .icon-btn{background:#F3F4F6;border-color:#D1D5DB;color:var(--text)}
+  .icon-btn:hover{opacity:.9}
+  nav.tabs{max-width:960px;margin:12px auto 0;padding:0 12px;display:flex;gap:8px;flex-wrap:wrap}
+  nav.tabs button{flex:1;min-width:110px;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:11px 8px;font-size:15px;font-weight:700;cursor:pointer}
+  nav.tabs button.active{background:linear-gradient(135deg,var(--h1),var(--h2));color:#fff;border-color:transparent}
+  [data-theme="light"] nav.tabs button.active{color:#1A1A1A}
+  main{max-width:960px;margin:0 auto;padding:14px 12px 30px}
+  section{display:none}
+  section.active{display:block}
+  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:6px 0 14px}
+  @media(min-width:640px){.cards{grid-template-columns:repeat(4,1fr)}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+  .card .lbl{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+  .card .val{font-size:22px;font-weight:900;margin-top:4px}
+  .card .val.green{color:var(--green)} .card .val.red{color:var(--red)}
+  .card .val.gold{color:var(--accent2)}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+  .panel h2{margin:0 0 10px;font-size:18px}
+  .panel h3{margin:14px 0 8px;font-size:15px}
+  .muted{color:var(--muted);font-size:13px}
+  .btn{border:0;border-radius:12px;padding:11px 16px;font-size:15px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--h1),var(--h2));color:#fff}
+  [data-theme="light"] .btn{color:#1A1A1A}
+  .btn.gold{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1A1A1A}
+  .btn.ghost{background:var(--chip);color:var(--text);border:1px solid var(--line)}
+  .btn.danger{background:#FEE2E2;color:#991B1B}
+  .btn.small{padding:7px 10px;font-size:13px;border-radius:9px}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:11px;font-size:15px;background:var(--card);color:var(--text);margin:5px 0}
+  label{font-size:13px;font-weight:700;color:var(--muted)}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+  .form-grid .full{grid-column:1 / -1}
+  .seg{display:flex;gap:6px;margin:6px 0}
+  .seg button{flex:1;padding:10px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--text);font-weight:700;cursor:pointer}
+  .seg button.on-aya{background:#D1FAE5;color:#065F46;border-color:#059669}
+  .seg button.on-gaya{background:#FEE2E2;color:#991B1B;border-color:#DC2626}
+  .seg button.on{background:var(--chip);border-color:var(--accent)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+  .chips button{padding:7px 12px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;font-weight:600}
+  .list-grid{display:grid;grid-template-columns:1fr;gap:10px}
+  @media(min-width:640px){.list-grid{grid-template-columns:1fr 1fr}}
+  .list-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);cursor:pointer;text-align:left;width:100%;color:var(--text);font-family:inherit}
+  .list-card:hover{border-color:var(--accent)}
+  .list-card .stripe{height:6px;border-radius:6px;margin-bottom:10px}
+  .list-card h3{margin:0 0 6px;font-size:17px}
+  .list-card .nums{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin:3px 0}
+  .list-card .nums b{color:var(--text);font-size:14px}
+  .bar{height:9px;background:#E5E7EB;border-radius:6px;overflow:hidden;margin-top:8px}
+  .bar > div{height:100%;border-radius:6px;background:var(--green)}
+  .bar > div.amber{background:var(--amber)} .bar > div.red{background:var(--red)}
+  .warn{color:var(--red);font-weight:700;font-size:13px;margin-top:6px}
+  .warn-amber{color:var(--amber);font-weight:700;font-size:13px;margin-top:6px}
+  .entry{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid var(--line)}
+  .entry:last-child{border-bottom:0}
+  .entry .ic{font-size:22px}
+  .entry .mid{flex:1;min-width:0}
+  .entry .mid .note{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .entry .mid .sub{font-size:12px;color:var(--muted)}
+  .entry .amt{font-weight:900;white-space:nowrap}
+  .entry .amt.aya{color:var(--green)} .entry .amt.gaya{color:var(--red)}
+  .mini{font-size:12px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+  .empty{text-align:center;color:var(--muted);padding:26px 10px}
+  .empty .big{font-size:34px}
+  .filters{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+  .filters .full{grid-column:1 / -1}
+  canvas{width:100%;max-width:100%;height:auto;display:block}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:13px}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  @media(min-width:640px){.theme-grid{grid-template-columns:repeat(4,1fr)}}
+  .theme-card{border:2px solid var(--line);border-radius:14px;padding:12px;cursor:pointer;background:var(--card);color:var(--text);font-family:inherit;text-align:left}
+  .theme-card.sel{border-color:var(--accent);box-shadow:var(--shadow)}
+  .theme-card .sw{height:44px;border-radius:10px;margin-bottom:8px}
+  .sw-emerald{background:linear-gradient(135deg,#064E3B,#065F46 60%,#D4AF37)}
+  .sw-navy{background:linear-gradient(135deg,#0A2463,#12275E 60%,#D4AF37)}
+  .sw-violet{background:linear-gradient(135deg,#2E1065,#4C1D95 60%,#C4B5FD)}
+  .sw-light{background:linear-gradient(135deg,#FFFFFF,#F4F4F4 60%,#D4AF37);border:1px solid #E5E7EB}
+  .kv{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+  .kv:last-child{border-bottom:0}
+  .kv b{text-align:right}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:18px 12px 30px}
+  #pinOverlay{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}
+  #pinOverlay.hidden{display:none}
+  .pin-box{background:#fff;color:#111;border-radius:18px;padding:26px 22px;max-width:340px;width:100%;text-align:center}
+  .pin-box h2{margin:0 0 6px}
+  .pin-box input{text-align:center;font-size:22px;letter-spacing:8px}
+  .pin-err{color:#DC2626;font-weight:700;min-height:18px;font-size:13px}
+  @keyframes parchi{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes tarazu{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+  .anim-parchi{animation:parchi .45s ease}
+  .anim-tarazu{animation:tarazu .45s ease}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+<div id="pinOverlay" class="hidden">
+  <div class="pin-box">
+    <div style="font-size:38px">🔒</div>
+    <h2>Kharchaaa Locked</h2>
+    <p class="muted">Apna 4-digit PIN daalein</p>
+    <input id="pinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••" autocomplete="off">
+    <div class="pin-err" id="pinErr"></div>
+    <button class="btn gold" style="width:100%" onclick="unlockApp()">Unlock</button>
+  </div>
+</div>
+
+<header>
+  <div class="head-row">
+    <div class="logo">K</div>
+    <div class="head-titles">
+      <h1>Kharchaaa</h1>
+      <p>Har rupaya, hisaab ke saath.</p>
+    </div>
+    <button class="icon-btn" id="eyeBtn" onclick="toggleHideBalance()" title="Balance chhupao ya dikhao">👁️ Balance</button>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button data-tab="dashboard" class="active" onclick="showTab('dashboard')">📊 Dashboard</button>
+  <button data-tab="lists" onclick="showTab('lists')">📒 Meri Lists</button>
+  <button data-tab="history" onclick="showTab('history')">🕘 History</button>
+  <button data-tab="support" onclick="showTab('support')">💬 Support</button>
+</nav>
+
+<main>
+  <!-- DASHBOARD -->
+  <section id="tab-dashboard" class="active">
+    <div class="cards">
+      <div class="card"><div class="lbl">Kul Balance</div><div class="val" id="dBalance">Rs 0</div></div>
+      <div class="card"><div class="lbl">Kul Aya</div><div class="val green" id="dAya">Rs 0</div></div>
+      <div class="card"><div class="lbl">Kul Gaya</div><div class="val red" id="dGaya">Rs 0</div></div>
+      <div class="card"><div class="lbl">Lists</div><div class="val gold" id="dLists">0</div></div>
+    </div>
+    <div class="panel">
+      <h2>📈 Aya vs Gaya — Aakhri 6 Mahine</h2>
+      <canvas id="barChart" width="880" height="300"></canvas>
+      <div class="legend"><span><span class="dot" style="background:#059669"></span>Aya</span><span><span class="dot" style="background:#DC2626"></span>Gaya</span></div>
+    </div>
+    <div class="panel">
+      <h2>🍩 Is Mahine ka Kharcha — Category ke hisaab se</h2>
+      <canvas id="donutChart" width="880" height="300"></canvas>
+      <div class="legend" id="donutLegend"></div>
+      <div class="empty hidden" id="donutEmpty"><div class="big">🍩</div><p>Is mahine abhi koi kharcha nahi hai.</p></div>
+    </div>
+    <div class="panel">
+      <h2>💡 Insights</h2>
+      <div id="insights"></div>
+    </div>
+  </section>
+
+  <!-- LISTS -->
+  <section id="tab-lists">
+    <div id="listsView">
+      <div class="btn-row">
+        <button class="btn" style="flex:1" onclick="toggleNewListForm()">+ Nayi List banao</button>
+        <button class="btn ghost" onclick="renderAll(true)" title="Refresh">↻ Refresh</button>
+      </div>
+      <div class="panel hidden" id="newListForm">
+        <h2>Nayi List</h2>
+        <div class="chips">
+          <span class="muted">Quick chips:</span>
+          <button type="button" onclick="setListName('Ghar')">🏠 Ghar</button>
+          <button type="button" onclick="setListName('Personal')">👤 Personal</button>
+          <button type="button" onclick="setListName('Salary')">💰 Salary</button>
+        </div>
+        <label>List ka naam</label>
+        <input id="nlName" placeholder="e.g. Ghar ka Kharcha">
+        <div class="form-grid">
+          <div><label>Budget (Rs) — 0 matlab no budget</label><input id="nlBudget" type="number" min="0" placeholder="30000"></div>
+          <div><label>List ka rang</label><input id="nlColor" type="color" value="#059669"></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn gold" onclick="createList()">List banao</button>
+          <button class="btn ghost" onclick="toggleNewListForm()">Cancel</button>
+        </div>
+      </div>
+      <input id="listSearch" placeholder="🔍 Lists search karein..." oninput="renderLists()">
+      <div class="list-grid" id="listsGrid" style="margin-top:10px"></div>
+      <div class="empty hidden" id="listsEmpty"><div class="big">📒</div><p>Abhi koi list nahi hai. Upar se nayi list banayein.</p></div>
+    </div>
+
+    <div id="listDetail" class="hidden">
+      <button class="btn ghost small" onclick="closeListDetail()">← Wapas Lists par</button>
+      <div class="panel" style="margin-top:10px">
+        <h2 id="ldName">List</h2>
+        <div class="kv"><span>Budget</span><b id="ldBudget">Rs 0</b></div>
+        <div class="kv"><span>Balance</span><b id="ldBalance">Rs 0</b></div>
+        <div class="kv"><span>Kul Aya</span><b id="ldAya" style="color:var(--green)">Rs 0</b></div>
+        <div class="kv"><span>Kul Gaya</span><b id="ldGaya" style="color:var(--red)">Rs 0</b></div>
+        <div class="bar" style="margin-top:10px"><div id="ldBar" style="width:0%"></div></div>
+        <p class="muted" id="ldBarText"></p>
+        <p class="warn hidden" id="ldWarn"></p>
+      </div>
+      <div class="panel">
+        <h2 id="entryFormTitle">➕ Nayi Entry</h2>
+        <div class="seg">
+          <button id="segAya" class="on-aya" onclick="setEntryType('aya')">⬇️ Aya</button>
+          <button id="segGaya" onclick="setEntryType('gaya')">⬆️ Gaya</button>
+        </div>
+        <div class="form-grid">
+          <div><label>Amount (Rs)</label><input id="eAmount" type="number" min="1" placeholder="1000"></div>
+          <div><label>Date</label><input id="eDate" type="date"></div>
+          <div class="full"><label>Category</label><select id="eCategory"></select></div>
+          <div class="full"><label>Note</label><input id="eNote" placeholder="e.g. Grocery, Bijli bill..."></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn gold" id="entrySaveBtn" onclick="saveEntry()">Entry add karein</button>
+          <button class="btn ghost hidden" id="entryCancelBtn" onclick="cancelEditEntry()">Cancel</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Entries</h2>
+        <div id="ldEntries"></div>
+      </div>
+      <button class="btn danger" onclick="deleteCurrentList()">🗑️ Ye list delete karein</button>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section id="tab-history">
+    <div class="panel">
+      <h2>🕘 Poori History</h2>
+      <div class="filters">
+        <div class="full"><input id="hSearch" placeholder="🔍 Search note / category..." oninput="renderHistory()"></div>
+        <div><label>List</label><select id="hList" onchange="renderHistory()"></select></div>
+        <div><label>Category</label><select id="hCat" onchange="renderHistory()"></select></div>
+        <div><label>Mahina</label><input id="hMonth" type="month" onchange="renderHistory()"></div>
+        <div><label>Type</label><select id="hType" onchange="renderHistory()"><option value="all">Sab</option><option value="aya">Sirf Aya</option><option value="gaya">Sirf Gaya</option></select></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="exportPDF()">📄 Poori History ki PDF</button>
+        <button class="btn ghost" onclick="exportJSON()">⬇️ Data Export (JSON)</button>
+        <button class="btn ghost" onclick="exportCSV()">⬇️ CSV Export</button>
+        <button class="btn ghost" onclick="document.getElementById('importFile').click()">⬆️ Data Import</button>
+        <input type="file" id="importFile" accept=".json,application/json" class="hidden" onchange="importJSON(event)">
+      </div>
+      <div id="historyList"></div>
+      <div class="empty" id="historyEmpty">
+        <div class="big">🕘</div>
+        <p><b>History khaali hai</b></p>
+        <p>Jab tum kisi list me Aya ya Gaya entry daalo ge, woh yahan nazar aayegi.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUPPORT -->
+  <section id="tab-support">
+    <div class="panel">
+      <h2>💬 Support</h2>
+      <div class="kv"><span>App</span><b>Kharchaaa</b></div>
+      <div class="kv"><span>Version</span><b>3.0</b></div>
+      <div class="kv"><span>Developer</span><b>Muhammad Abdullah Khalid</b></div>
+      <div class="kv"><span>Team</span><b>ByteBuddy Devs</b></div>
+      <div class="kv"><span>Email</span><b>abdullahjoyiaofficial@gmail.com</b></div>
+      <p style="margin-top:12px">Kharchaaa maine banayi hai taake aap apne paisay ka hisaab aasani se rakh sakein.</p>
+      <div class="btn-row">
+        <a class="btn gold" style="text-decoration:none" href="mailto:abdullahjoyiaofficial@gmail.com?subject=Kharchaaa%20Support">💬 Support</a>
+        <button class="btn ghost" onclick="copyEmail()">📋 Email copy karein</button>
+      </div>
+      <p class="muted" id="copyMsg"></p>
+    </div>
+
+    <div class="panel">
+      <h2>🎨 Theme</h2>
+      <p class="muted">Apni pasand ka theme chunein — choice save ho jayegi.</p>
+      <div class="theme-grid" id="themeGrid">
+        <button class="theme-card" data-theme-name="emerald" onclick="setTheme('emerald')"><div class="sw sw-emerald"></div><b>Emerald &amp; Gold</b><br><span class="muted">Naya theme</span></button>
+        <button class="theme-card" data-theme-name="navy" onclick="setTheme('navy')"><div class="sw sw-navy"></div><b>Royal Navy &amp; Gold</b><br><span class="muted">Default — classic premium</span></button>
+        <button class="theme-card" data-theme-name="violet" onclick="setTheme('violet')"><div class="sw sw-violet"></div><b>Midnight Violet</b><br><span class="muted">Geha violet</span></button>
+        <button class="theme-card" data-theme-name="light" onclick="setTheme('light')"><div class="sw sw-light"></div><b>Light</b><br><span class="muted">Saaf aur halka</span></button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>🔄 Refresh Animation</h2>
+      <p class="muted">Lists refresh hote waqt kaunsi animation chale?</p>
+      <div class="seg">
+        <button id="raParchi" onclick="setRefreshAnim('Parchi')">🧾 Parchi</button>
+        <button id="raTarazu" onclick="setRefreshAnim('Tarazu')">⚖️ Tarazu</button>
+        <button id="raBand" onclick="setRefreshAnim('Band')">🚫 Band</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>🔒 PIN Lock</h2>
+      <p class="muted">PIN lagayein to app khulte hi PIN maangegi. PIN sirf isi device par save hota hai.</p>
+      <div id="pinStatus" class="muted"></div>
+      <div class="form-grid" style="margin-top:8px">
+        <div><label>Naya 4-digit PIN</label><input id="pinNew" type="password" inputmode="numeric" maxlength="4" placeholder="1234"></div>
+        <div><label>PIN dobara likhein</label><input id="pinConfirm" type="password" inputmode="numeric" maxlength="4" placeholder="1234"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="savePin()">PIN set / change karein</button>
+        <button class="btn danger" id="pinRemoveBtn" onclick="removePin()">PIN hata dein</button>
+      </div>
+      <p class="muted" id="pinMsg"></p>
+    </div>
+
+    <div class="panel">
+      <h2>⚙️ Data</h2>
+      <p class="muted">Saara data aapke browser ki localStorage mein save hota hai. Backup ke liye History tab se JSON export karein.</p>
+      <div class="btn-row">
+        <button class="btn danger" onclick="resetDemoData()">↺ Reset demo data</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>Kharchaaa — Har rupaya, hisaab ke saath.</footer>
+
+<script>
+/* ================= Kharchaaa v3.0 — pure logic (testable, no DOM at top level) ================= */
+var CATEGORIES = [
+  {name:'Khana', icon:'🍽️', color:'#F59E0B'},
+  {name:'Kiraya', icon:'🏠', color:'#8B5CF6'},
+  {name:'Bijli/Gas', icon:'💡', color:'#F97316'},
+  {name:'Transport', icon:'🚌', color:'#0EA5E9'},
+  {name:'Shopping', icon:'🛍️', color:'#EC4899'},
+  {name:'Sehat', icon:'❤️', color:'#EF4444'},
+  {name:'Taleem', icon:'📚', color:'#6366F1'},
+  {name:'Dukaan', icon:'🏪', color:'#10B981'},
+  {name:'Salary', icon:'💰', color:'#059669'},
+  {name:'Other', icon:'📦', color:'#6B7280'}
+];
+var CATEGORY_NAMES = CATEGORIES.map(function(c){ return c.name; });
+var V3_KEY = 'kharchaaa-data-v3';
+var V2_KEY = 'kharchaaa-data-v2';
+var PIN_KEY = 'kharchaaa-pin-v3';
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+function monthKey(d){ var s = (d instanceof Date) ? d.toISOString().slice(0,10) : String(d); return s.slice(0,7); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function daysAgoStr(n){ var d = new Date(); d.setDate(d.getDate() - n); return d.toISOString().slice(0,10); }
+function fmtMoney(n, hidden){
+  if (hidden) return '•••';
+  var num = Number(n) || 0;
+  return 'Rs ' + num.toLocaleString('en-PK');
+}
+function normType(t){
+  var s = String(t == null ? '' : t).toLowerCase();
+  if (s === 'aya' || s === 'income' || s === 'in' || s === 'credit') return 'aya';
+  return 'gaya';
+}
+function normCategory(cat, type){
+  if (cat && CATEGORY_NAMES.indexOf(cat) !== -1) return cat;
+  return type === 'aya' ? 'Salary' : 'Other';
+}
+function listTotals(list){
+  var aya = 0, gaya = 0;
+  (list.entries || []).forEach(function(e){
+    var amt = Number(e.amount) || 0;
+    if (normType(e.type) === 'aya') aya += amt; else gaya += amt;
+  });
+  return { aya: aya, gaya: gaya, balance: aya - gaya };
+}
+function grandTotals(data){
+  var aya = 0, gaya = 0;
+  (data.lists || []).forEach(function(l){
+    var t = listTotals(l); aya += t.aya; gaya += t.gaya;
+  });
+  return { aya: aya, gaya: gaya, balance: aya - gaya, count: (data.lists || []).length };
+}
+function budgetPct(list){
+  var t = listTotals(list);
+  var b = Number(list.budget) || 0;
+  if (!b || b <= 0) return null;
+  return { pct: (t.gaya / b) * 100, used: t.gaya, budget: b };
+}
+function categoryTotals(entries, onlyMonth){
+  var map = {};
+  (entries || []).forEach(function(e){
+    if (normType(e.type) !== 'gaya') return;
+    if (onlyMonth && monthKey(e.date) !== onlyMonth) return;
+    var c = normCategory(e.category, 'gaya');
+    map[c] = (map[c] || 0) + (Number(e.amount) || 0);
+  });
+  return map;
+}
+function allEntries(data){
+  var out = [];
+  (data.lists || []).forEach(function(l){
+    (l.entries || []).forEach(function(e){
+      out.push({ listId: l.id, listName: l.name, id: e.id, type: normType(e.type),
+        amount: Number(e.amount) || 0, note: e.note || '', category: normCategory(e.category, normType(e.type)), date: e.date || todayStr() });
+    });
+  });
+  out.sort(function(a, b){ return String(b.date).localeCompare(String(a.date)); });
+  return out;
+}
+function monthlyTotals(data, months){
+  months = months || 6;
+  var now = new Date();
+  var keys = [];
+  for (var i = months - 1; i >= 0; i--){
+    var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    keys.push({ key: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'),
+      label: d.toLocaleString('en', { month: 'short' }) });
+  }
+  var entries = allEntries(data);
+  return keys.map(function(k){
+    var aya = 0, gaya = 0;
+    entries.forEach(function(e){
+      if (monthKey(e.date) === k.key){
+        if (e.type === 'aya') aya += e.amount; else gaya += e.amount;
+      }
+    });
+    return { key: k.key, label: k.label, aya: aya, gaya: gaya };
+  });
+}
+function topGayaCategory(data, onlyMonth){
+  var map = categoryTotals(allEntries(data), onlyMonth);
+  var top = null, topAmt = 0;
+  Object.keys(map).forEach(function(c){ if (map[c] > topAmt){ topAmt = map[c]; top = c; } });
+  return { category: top, amount: topAmt };
+}
+function migrateV2Data(v2){
+  var rawLists = null;
+  if (v2 && Array.isArray(v2.lists)) rawLists = v2.lists;
+  else if (Array.isArray(v2)) rawLists = v2;
+  else if (v2 && Array.isArray(v2.data)) rawLists = v2.data;
+  if (!rawLists) return null;
+  var lists = rawLists.map(function(l){
+    var entries = (l.entries || l.transactions || l.items || []).map(function(e){
+      var type = normType(e.type || e.kind || (Number(e.amount) < 0 ? 'gaya' : 'aya'));
+      var amount = Math.abs(Number(e.amount) || 0);
+      return { id: e.id || uid(), type: type, amount: amount,
+        note: e.note || e.title || e.description || '',
+        category: normCategory(e.category, type), date: e.date || todayStr() };
+    });
+    return { id: l.id || uid(), name: l.name || 'List', budget: 0,
+      color: l.color || '#059669', entries: entries };
+  });
+  return { lists: lists, settings: { theme: 'navy', hideBalance: false, refreshAnim: 'Parchi' } };
+}
+function seedData(){
+  function dAgo(n){ return daysAgoStr(n); }
+  function firstThisMonth(){ var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-01'; }
+  function lastMonthDay(day){ var d = new Date(); d.setMonth(d.getMonth()-1); d.setDate(Math.min(day, 28)); return d.toISOString().slice(0,10); }
+  return {
+    lists: [
+      { id: uid(), name: 'Ghar ka Kharcha', budget: 30000, color: '#059669', entries: [
+        { id: uid(), type: 'aya', amount: 50000, note: 'Monthly ghar budget', category: 'Salary', date: firstThisMonth() },
+        { id: uid(), type: 'gaya', amount: 12000, note: 'Ghar ka kiraya', category: 'Kiraya', date: firstThisMonth() },
+        { id: uid(), type: 'gaya', amount: 3500, note: 'Grocery', category: 'Khana', date: dAgo(3) },
+        { id: uid(), type: 'gaya', amount: 4200, note: 'Bijli bill', category: 'Bijli/Gas', date: dAgo(6) },
+        { id: uid(), type: 'gaya', amount: 1500, note: 'Rickshaw', category: 'Transport', date: dAgo(1) },
+        { id: uid(), type: 'gaya', amount: 2800, note: 'Grocery', category: 'Khana', date: lastMonthDay(20) },
+        { id: uid(), type: 'gaya', amount: 4500, note: 'Kapray', category: 'Shopping', date: lastMonthDay(15) }
+      ]},
+      { id: uid(), name: 'Business – Dukaan', budget: 80000, color: '#D4AF37', entries: [
+        { id: uid(), type: 'aya', amount: 35000, note: 'Dukaan sale', category: 'Dukaan', date: dAgo(4) },
+        { id: uid(), type: 'aya', amount: 12000, note: 'Dukaan sale', category: 'Dukaan', date: lastMonthDay(12) },
+        { id: uid(), type: 'gaya', amount: 5000, note: 'Stock khareeda', category: 'Dukaan', date: dAgo(2) },
+        { id: uid(), type: 'gaya', amount: 1200, note: 'Delivery', category: 'Transport', date: lastMonthDay(18) }
+      ]},
+      { id: uid(), name: 'Shaadi Fund', budget: 100000, color: '#8B5CF6', entries: [
+        { id: uid(), type: 'aya', amount: 28000, note: 'Salary se saving', category: 'Salary', date: dAgo(10) },
+        { id: uid(), type: 'gaya', amount: 12500, note: 'Hall advance', category: 'Other', date: dAgo(7) },
+        { id: uid(), type: 'gaya', amount: 3500, note: 'Shaadi shopping', category: 'Shopping', date: lastMonthDay(9) }
+      ]}
+    ],
+    settings: { theme: 'navy', hideBalance: false, refreshAnim: 'Parchi' }
+  };
+}
+
+/* ================= App state + DOM ================= */
+var data = null;
+var currentListId = null;
+var entryType = 'aya';
+var editingEntryId = null;
+var unlocked = false;
+
+function loadData(){
+  try {
+    var raw = localStorage.getItem(V3_KEY);
+    if (raw){ data = JSON.parse(raw); if (!data.settings) data.settings = { theme:'navy', hideBalance:false, refreshAnim:'Parchi' }; return; }
+    var raw2 = localStorage.getItem(V2_KEY);
+    if (raw2){
+      try { var mig = migrateV2Data(JSON.parse(raw2)); if (mig && mig.lists.length){ data = mig; saveData(); return; } } catch(e){}
+    }
+  } catch(e){}
+  data = seedData();
+  saveData();
+}
+function saveData(){ try { localStorage.setItem(V3_KEY, JSON.stringify(data)); } catch(e){} }
+function getPin(){ try { return localStorage.getItem(PIN_KEY) || ''; } catch(e){ return ''; } }
+function setPinStored(p){ try { if (p) localStorage.setItem(PIN_KEY, p); else localStorage.removeItem(PIN_KEY); } catch(e){} }
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function catMeta(name){
+  for (var i = 0; i < CATEGORIES.length; i++) if (CATEGORIES[i].name === name) return CATEGORIES[i];
+  return { name: name, icon: '📦', color: '#6B7280' };
+}
+function showTab(name){
+  document.querySelectorAll('nav.tabs button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-tab') === name); });
+  document.querySelectorAll('main section').forEach(function(s){ s.classList.toggle('active', s.id === 'tab-' + name); });
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'lists') renderLists();
+  if (name === 'history') renderHistory();
+}
+function toggleHideBalance(){
+  data.settings.hideBalance = !data.settings.hideBalance;
+  saveData(); renderAll();
+  $('eyeBtn').textContent = data.settings.hideBalance ? '🙈 Balance' : '👁️ Balance';
+}
+function setTheme(name){
+  data.settings.theme = name;
+  document.documentElement.setAttribute('data-theme', name);
+  saveData();
+  document.querySelectorAll('.theme-card').forEach(function(c){ c.classList.toggle('sel', c.getAttribute('data-theme-name') === name); });
+}
+function setRefreshAnim(v){
+  data.settings.refreshAnim = v; saveData(); syncSupportUI();
+}
+function syncSupportUI(){
+  var ra = data.settings.refreshAnim || 'Parchi';
+  $('raParchi').classList.toggle('on', ra === 'Parchi');
+  $('raTarazu').classList.toggle('on', ra === 'Tarazu');
+  $('raBand').classList.toggle('on', ra === 'Band');
+  $('pinStatus').textContent = getPin() ? 'PIN lagaa hua hai — app khulte hi PIN maangegi.' : 'PIN nahi laga hua.';
+  $('pinRemoveBtn').style.display = getPin() ? '' : 'none';
+}
+function copyEmail(){
+  var email = 'abdullahjoyiaofficial@gmail.com';
+  function done(){ $('copyMsg').textContent = 'Email copy ho gaya: ' + email; }
+  if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(email).then(done, function(){ $('copyMsg').textContent = 'Email: ' + email; }); }
+  else { $('copyMsg').textContent = 'Email: ' + email; }
+}
+function savePin(){
+  var a = ($('pinNew').value || '').trim(), b = ($('pinConfirm').value || '').trim();
+  if (!/^\d{4}$/.test(a)){ $('pinMsg').textContent = 'PIN 4 digits ka hona chahiye.'; return; }
+  if (a !== b){ $('pinMsg').textContent = 'Dono PIN aik jaise nahi hain.'; return; }
+  setPinStored(a);
+  $('pinNew').value = ''; $('pinConfirm').value = '';
+  $('pinMsg').textContent = 'PIN save ho gaya.';
+  syncSupportUI();
+}
+function removePin(){
+  if (!confirm('PIN hata dein?')) return;
+  setPinStored(''); $('pinMsg').textContent = 'PIN hata diya gaya.'; syncSupportUI();
+}
+function unlockApp(){
+  var v = ($('pinInput').value || '').trim();
+  if (v === getPin()){ unlocked = true; $('pinOverlay').classList.add('hidden'); }
+  else { $('pinErr').textContent = 'Ghalat PIN — dobara try karein.'; $('pinInput').value = ''; }
+}
+function resetDemoData(){
+  if (!confirm('Saara data delete kar ke demo data wapas la dein?')) return;
+  localStorage.removeItem(V3_KEY);
+  data = seedData(); saveData();
+  currentListId = null; editingEntryId = null;
+  closeListDetail(); renderAll();
+}
+
+/* ---------- Dashboard ---------- */
+function renderDashboard(){
+  var g = grandTotals(data);
+  var h = !!data.settings.hideBalance;
+  $('dBalance').textContent = fmtMoney(g.balance, h);
+  $('dAya').textContent = fmtMoney(g.aya, h);
+  $('dGaya').textContent = fmtMoney(g.gaya, h);
+  $('dLists').textContent = String(g.count);
+  drawBarChart();
+  drawDonut();
+  renderInsights();
+}
+function drawBarChart(){
+  var c = $('barChart'); if (!c) return;
+  var ctx = c.getContext('2d'); if (!ctx) return;
+  var months = monthlyTotals(data, 6);
+  var max = 1;
+  months.forEach(function(m){ max = Math.max(max, m.aya, m.gaya); });
+  var W = c.width, H = c.height, padL = 58, padB = 28, padT = 14;
+  ctx.clearRect(0, 0, W, H);
+  ctx.font = '12px sans-serif'; ctx.fillStyle = '#5B7A6E';
+  for (var gline = 0; gline <= 4; gline++){
+    var y = padT + (H - padB - padT) * (1 - gline / 4);
+    ctx.strokeStyle = '#E5E7EB'; ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - 10, y); ctx.stroke();
+    ctx.fillText(fmtMoney(Math.round(max * gline / 4), false), 4, y + 4);
+  }
+  var slot = (W - padL - 10) / months.length;
+  months.forEach(function(m, i){
+    var x0 = padL + i * slot;
+    var bw = Math.min(26, slot * 0.28);
+    var hA = (m.aya / max) * (H - padB - padT);
+    var hG = (m.gaya / max) * (H - padB - padT);
+    ctx.fillStyle = '#059669'; ctx.fillRect(x0 + slot * 0.18, H - padB - hA, bw, hA);
+    ctx.fillStyle = '#DC2626'; ctx.fillRect(x0 + slot * 0.18 + bw + 4, H - padB - hG, bw, hG);
+    ctx.fillStyle = '#374151'; ctx.textAlign = 'center';
+    ctx.fillText(m.label, x0 + slot / 2, H - 8);
+    ctx.textAlign = 'left';
+  });
+}
+function drawDonut(){
+  var c = $('donutChart'); if (!c) return;
+  var ctx = c.getContext('2d'); if (!ctx) return;
+  var mk = monthKey(todayStr());
+  var map = categoryTotals(allEntries(data), mk);
+  var keys = Object.keys(map);
+  var total = keys.reduce(function(s, k){ return s + map[k]; }, 0);
+  $('donutEmpty').classList.toggle('hidden', total > 0);
+  c.style.display = total > 0 ? '' : 'none';
+  $('donutLegend').innerHTML = '';
+  if (!total) return;
+  var W = c.width, H = c.height, cx = 150, cy = H / 2, r = 105, rIn = 62;
+  ctx.clearRect(0, 0, W, H);
+  var start = -Math.PI / 2;
+  keys.forEach(function(k){
+    var frac = map[k] / total;
+    var end = start + frac * Math.PI * 2;
+    var meta = catMeta(k);
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, end); ctx.closePath();
+    ctx.fillStyle = meta.color; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, rIn, start, end); ctx.closePath();
+    ctx.fillStyle = '#FFFFFF'; ctx.fill();
+    start = end;
+  });
+  ctx.fillStyle = '#052E22'; ctx.font = 'bold 17px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText(fmtMoney(total, false), cx, cy - 2);
+  ctx.font = '12px sans-serif'; ctx.fillStyle = '#5B7A6E';
+  ctx.fillText('Is mahine ka kharcha', cx, cy + 16);
+  ctx.textAlign = 'left';
+  var legend = $('donutLegend');
+  keys.forEach(function(k){
+    var meta = catMeta(k);
+    var pct = Math.round((map[k] / total) * 100);
+    legend.innerHTML += '<span><span class="dot" style="background:' + meta.color + '"></span>' + esc(meta.icon + ' ' + k) + ' — ' + esc(fmtMoney(map[k], false)) + ' (' + pct + '%)</span>';
+  });
+}
+function renderInsights(){
+  var mk = monthKey(todayStr());
+  var now = new Date();
+  var last = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  var lastKey = last.getFullYear() + '-' + String(last.getMonth() + 1).padStart(2, '0');
+  var top = topGayaCategory(data, mk);
+  var thisGaya = categoryTotals(allEntries(data), mk);
+  var thisSum = Object.keys(thisGaya).reduce(function(s, k){ return s + thisGaya[k]; }, 0);
+  var lastGaya = categoryTotals(allEntries(data), lastKey);
+  var lastSum = Object.keys(lastGaya).reduce(function(s, k){ return s + lastGaya[k]; }, 0);
+  var diff = thisSum - lastSum;
+  var html = '';
+  if (top.category){
+    var meta = catMeta(top.category);
+    html += '<div class="kv"><span>Is mahine sab se zyada kharcha</span><b>' + esc(meta.icon + ' ' + top.category) + ' — ' + esc(fmtMoney(top.amount, false)) + '</b></div>';
+  } else {
+    html += '<div class="kv"><span>Is mahine sab se zyada kharcha</span><b>Abhi koi kharcha nahi</b></div>';
+  }
+  var cmp = diff > 0 ? ('Rs ' + Math.abs(diff).toLocaleString('en-PK') + ' zyada') : diff < 0 ? ('Rs ' + Math.abs(diff).toLocaleString('en-PK') + ' kam') : 'Barabar';
+  html += '<div class="kv"><span>Is mahina vs pichla mahina (Gaya)</span><b>' + esc(fmtMoney(thisSum, false)) + ' vs ' + esc(fmtMoney(lastSum, false)) + ' — ' + esc(cmp) + '</b></div>';
+  var over = [];
+  (data.lists || []).forEach(function(l){
+    var bp = budgetPct(l);
+    if (bp && bp.pct > 100) over.push(l.name);
+  });
+  html += '<div class="kv"><span>Budget se zyada kharch wali lists</span><b>' + (over.length ? esc(over.join(', ')) : 'Koi nahi 👍') + '</b></div>';
+  $('insights').innerHTML = html;
+}
+
+/* ---------- Lists ---------- */
+function toggleNewListForm(){ $('newListForm').classList.toggle('hidden'); }
+function setListName(n){ $('nlName').value = n === 'Ghar' ? 'Ghar ka Kharcha' : n === 'Personal' ? 'Personal Kharcha' : 'Salary'; }
+function createList(){
+  var name = ($('nlName').value || '').trim();
+  if (!name){ alert('List ka naam likhein.'); return; }
+  var budget = Number($('nlBudget').value) || 0;
+  var color = $('nlColor').value || '#059669';
+  data.lists.push({ id: uid(), name: name, budget: budget, color: color, entries: [] });
+  saveData();
+  $('nlName').value = ''; $('nlBudget').value = '';
+  toggleNewListForm(); renderLists(); renderDashboard();
+}
+function renderLists(){
+  var q = (($('listSearch').value || '').trim().toLowerCase());
+  var grid = $('listsGrid');
+  var anim = data.settings.refreshAnim || 'Parchi';
+  grid.classList.remove('anim-parchi', 'anim-tarazu');
+  if (anim === 'Parchi') grid.classList.add('anim-parchi');
+  else if (anim === 'Tarazu') grid.classList.add('anim-tarazu');
+  var lists = (data.lists || []).filter(function(l){ return !q || l.name.toLowerCase().indexOf(q) !== -1; });
+  $('listsEmpty').classList.toggle('hidden', lists.length > 0);
+  var h = !!data.settings.hideBalance;
+  grid.innerHTML = lists.map(function(l){
+    var t = listTotals(l);
+    var bp = budgetPct(l);
+    var pct = bp ? Math.min(100, Math.round(bp.pct)) : 0;
+    var cls = bp && bp.pct > 100 ? 'red' : bp && bp.pct > 80 ? 'amber' : '';
+    var warn = bp && bp.pct > 100 ? '<div class="warn">⚠️ Budget se zyada kharch ho gaya!</div>'
+      : bp && bp.pct > 80 ? '<div class="warn-amber">⚠️ Budget khatam hone wala hai (' + Math.round(bp.pct) + '%)</div>' : '';
+    var budgetLine = bp
+      ? '<div class="nums"><span>Budget</span><b>' + esc(fmtMoney(l.budget, h)) + '</b></div><div class="bar"><div class="' + cls + '" style="width:' + pct + '%"></div></div><div class="nums"><span>Budget used</span><b>' + Math.round(bp.pct) + '%</b></div>' + warn
+      : '<div class="nums"><span>Budget</span><b>No budget set</b></div>';
+    return '<button class="list-card" onclick="openListDetail(\'' + l.id + '\')">' +
+      '<div class="stripe" style="background:' + esc(l.color || '#059669') + '"></div>' +
+      '<h3>' + esc(l.name) + '</h3>' +
+      '<div class="nums"><span>Balance</span><b>' + esc(fmtMoney(t.balance, h)) + '</b></div>' +
+      '<div class="nums"><span>Aya</span><b style="color:var(--green)">' + esc(fmtMoney(t.aya, h)) + '</b></div>' +
+      '<div class="nums"><span>Gaya</span><b style="color:var(--red)">' + esc(fmtMoney(t.gaya, h)) + '</b></div>' +
+      budgetLine + '</button>';
+  }).join('');
+}
+function openListDetail(id){
+  currentListId = id; editingEntryId = null;
+  $('listsView').classList.add('hidden');
+  $('listDetail').classList.remove('hidden');
+  $('eDate').value = todayStr();
+  setEntryType('aya');
+  renderListDetail();
+}
+function closeListDetail(){
+  currentListId = null; editingEntryId = null;
+  $('listDetail').classList.add('hidden');
+  $('listsView').classList.remove('hidden');
+  renderLists();
+}
+function getCurrentList(){ return (data.lists || []).find(function(l){ return l.id === currentListId; }); }
+function setEntryType(t){
+  entryType = t;
+  $('segAya').className = t === 'aya' ? 'on-aya' : '';
+  $('segGaya').className = t === 'gaya' ? 'on-gaya' : '';
+  fillCategorySelect();
+}
+function fillCategorySelect(){
+  var sel = $('eCategory');
+  var cur = sel.value;
+  sel.innerHTML = CATEGORIES.map(function(c){ return '<option value="' + esc(c.name) + '">' + esc(c.icon + ' ' + c.name) + '</option>'; }).join('');
+  var def = entryType === 'aya' ? 'Salary' : 'Other';
+  sel.value = CATEGORY_NAMES.indexOf(cur) !== -1 ? cur : def;
+}
+function renderListDetail(){
+  var l = getCurrentList(); if (!l) return;
+  var t = listTotals(l);
+  var h = !!data.settings.hideBalance;
+  $('ldName').textContent = l.name;
+  $('ldBudget').textContent = (Number(l.budget) || 0) > 0 ? fmtMoney(l.budget, h) : 'No budget set';
+  $('ldBalance').textContent = fmtMoney(t.balance, h);
+  $('ldAya').textContent = fmtMoney(t.aya, h);
+  $('ldGaya').textContent = fmtMoney(t.gaya, h);
+  var bp = budgetPct(l);
+  if (bp){
+    $('ldBar').style.width = Math.min(100, Math.round(bp.pct)) + '%';
+    $('ldBar').className = bp.pct > 100 ? 'red' : bp.pct > 80 ? 'amber' : '';
+    $('ldBarText').textContent = 'Budget used: ' + Math.round(bp.pct) + '% (' + fmtMoney(bp.used, h) + ' / ' + fmtMoney(bp.budget, h) + ')';
+    $('ldWarn').classList.toggle('hidden', bp.pct <= 100);
+    $('ldWarn').textContent = bp.pct > 100 ? '⚠️ Budget se zyada kharch ho gaya!' : '';
+  } else {
+    $('ldBar').style.width = '0%';
+    $('ldBarText').textContent = 'Is list ka koi budget set nahi hai.';
+    $('ldWarn').classList.add('hidden');
+  }
+  var entries = (l.entries || []).slice().sort(function(a, b){ return String(b.date).localeCompare(String(a.date)); });
+  $('ldEntries').innerHTML = entries.length ? entries.map(function(e){
+    var meta = catMeta(normCategory(e.category, normType(e.type)));
+    var isAya = normType(e.type) === 'aya';
+    return '<div class="entry"><span class="ic">' + esc(meta.icon) + '</span>' +
+      '<div class="mid"><div class="note">' + esc(e.note || meta.name) + '</div>' +
+      '<div class="sub">' + esc(meta.name) + ' • ' + esc(e.date) + '</div></div>' +
+      '<span class="amt ' + (isAya ? 'aya' : 'gaya') + '">' + (isAya ? '+' : '−') + ' ' + esc(fmtMoney(e.amount, h)) + '</span>' +
+      '<button class="mini" onclick="editEntry(\'' + e.id + '\')">✏️ Edit</button>' +
+      '<button class="mini" onclick="deleteEntry(\'' + e.id + '\')">🗑️</button></div>';
+  }).join('') : '<div class="empty"><div class="big">📝</div><p>Is list mein abhi koi entry nahi hai.</p></div>';
+}
+function saveEntry(){
+  var l = getCurrentList(); if (!l) return;
+  var amount = Number($('eAmount').value);
+  if (!amount || amount <= 0){ alert('Sahi amount likhein.'); return; }
+  var entry = {
+    id: editingEntryId || uid(),
+    type: entryType,
+    amount: amount,
+    note: ($('eNote').value || '').trim(),
+    category: normCategory($('eCategory').value, entryType),
+    date: $('eDate').value || todayStr()
+  };
+  if (editingEntryId){
+    var i = l.entries.findIndex(function(e){ return e.id === editingEntryId; });
+    if (i !== -1) l.entries[i] = entry;
+    editingEntryId = null;
+    $('entryFormTitle').textContent = '➕ Nayi Entry';
+    $('entrySaveBtn').textContent = 'Entry add karein';
+    $('entryCancelBtn').classList.add('hidden');
+  } else {
+    l.entries.push(entry);
+  }
+  saveData();
+  $('eAmount').value = ''; $('eNote').value = ''; $('eDate').value = todayStr();
+  renderListDetail(); renderDashboard();
+}
+function editEntry(id){
+  var l = getCurrentList(); if (!l) return;
+  var e = (l.entries || []).find(function(x){ return x.id === id; }); if (!e) return;
+  editingEntryId = id;
+  setEntryType(normType(e.type));
+  $('eAmount').value = e.amount;
+  $('eNote').value = e.note || '';
+  $('eDate').value = e.date || todayStr();
+  $('eCategory').value = normCategory(e.category, normType(e.type));
+  $('entryFormTitle').textContent = '✏️ Entry Edit karein';
+  $('entrySaveBtn').textContent = 'Save karein';
+  $('entryCancelBtn').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function cancelEditEntry(){
+  editingEntryId = null;
+  $('eAmount').value = ''; $('eNote').value = ''; $('eDate').value = todayStr();
+  setEntryType('aya');
+  $('entryFormTitle').textContent = '➕ Nayi Entry';
+  $('entrySaveBtn').textContent = 'Entry add karein';
+  $('entryCancelBtn').classList.add('hidden');
+}
+function deleteEntry(id){
+  var l = getCurrentList(); if (!l) return;
+  if (!confirm('Ye entry delete kar dein?')) return;
+  l.entries = (l.entries || []).filter(function(e){ return e.id !== id; });
+  saveData(); renderListDetail(); renderDashboard();
+}
+function deleteCurrentList(){
+  var l = getCurrentList(); if (!l) return;
+  if (!confirm('List "' + l.name + '" aur uski saari entries delete kar dein?')) return;
+  data.lists = (data.lists || []).filter(function(x){ return x.id !== l.id; });
+  saveData(); closeListDetail(); renderDashboard();
+}
+
+/* ---------- History ---------- */
+function fillHistoryFilters(){
+  var listSel = $('hList');
+  var curL = listSel.value;
+  listSel.innerHTML = '<option value="all">Saari Lists</option>' + (data.lists || []).map(function(l){ return '<option value="' + esc(l.id) + '">' + esc(l.name) + '</option>'; }).join('');
+  if (curL) listSel.value = curL;
+  var catSel = $('hCat');
+  var curC = catSel.value;
+  catSel.innerHTML = '<option value="all">Saari Categories</option>' + CATEGORIES.map(function(c){ return '<option value="' + esc(c.name) + '">' + esc(c.icon + ' ' + c.name) + '</option>'; }).join('');
+  if (curC) catSel.value = curC;
+}
+function filteredHistory(){
+  var q = (($('hSearch').value || '').trim().toLowerCase());
+  var listF = $('hList').value || 'all';
+  var catF = $('hCat').value || 'all';
+  var monthF = $('hMonth').value || '';
+  var typeF = $('hType').value || 'all';
+  return allEntries(data).filter(function(e){
+    if (listF !== 'all' && e.listId !== listF) return false;
+    if (catF !== 'all' && e.category !== catF) return false;
+    if (monthF && monthKey(e.date) !== monthF) return false;
+    if (typeF !== 'all' && e.type !== typeF) return false;
+    if (q && (e.note || '').toLowerCase().indexOf(q) === -1 && e.category.toLowerCase().indexOf(q) === -1 && e.listName.toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+}
+function renderHistory(){
+  fillHistoryFilters();
+  var rows = filteredHistory();
+  var h = !!data.settings.hideBalance;
+  $('historyEmpty').style.display = rows.length ? 'none' : '';
+  $('historyList').innerHTML = rows.map(function(e){
+    var meta = catMeta(e.category);
+    var isAya = e.type === 'aya';
+    return '<div class="entry"><span class="ic">' + esc(meta.icon) + '</span>' +
+      '<div class="mid"><div class="note">' + esc(e.note || meta.name) + '</div>' +
+      '<div class="sub">' + esc(e.listName) + ' • ' + esc(meta.name) + ' • ' + esc(e.date) + '</div></div>' +
+      '<span class="amt ' + (isAya ? 'aya' : 'gaya') + '">' + (isAya ? '+' : '−') + ' ' + esc(fmtMoney(e.amount, h)) + '</span></div>';
+  }).join('');
+}
+function downloadFile(name, content, mime){
+  /* AndroidBridge hook (assets copy only): in the Android app, route the
+     download through the native bridge so it really saves on the device.
+     On the plain website window.AndroidBridge does not exist, so the
+     normal browser download below is used instead. */
+  if (window.AndroidBridge && window.AndroidBridge.downloadText){
+    try { window.AndroidBridge.downloadText(name, content, mime || 'text/plain'); return; }
+    catch (e) { /* fall through to the normal browser download below */ }
+  }
+  var blob = new Blob([content], { type: mime || 'text/plain' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+}
+function exportJSON(){ downloadFile('Kharchaaa_Backup.json', JSON.stringify(data, null, 2), 'application/json'); }
+function exportCSV(){
+  var rows = allEntries(data);
+  var csv = 'Date,List,Type,Category,Note,Amount\n' + rows.map(function(e){
+    function q(v){ return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }
+    return [e.date, e.listName, e.type, e.category, e.note, e.amount].map(q).join(',');
+  }).join('\n');
+  downloadFile('Kharchaaa_History.csv', csv, 'text/csv');
+}
+function importJSON(ev){
+  var file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(){
+    try {
+      var parsed = JSON.parse(reader.result);
+      var lists = parsed && Array.isArray(parsed.lists) ? parsed.lists : null;
+      if (!lists) throw new Error('Invalid backup');
+      if (!confirm(lists.length + ' lists import karein? Purana data replace ho jayega.')) return;
+      var mig = migrateV2Data(parsed);
+      data = mig && mig.lists ? { lists: mig.lists.map(function(l){ l.budget = Number(l.budget) || 0; return l; }), settings: data.settings } : data;
+      if (parsed.settings) data.settings = Object.assign({ theme: 'navy', hideBalance: false, refreshAnim: 'Parchi' }, parsed.settings);
+      saveData(); applySettings(); renderAll();
+      alert('Import ho gaya.');
+    } catch(err){ alert('Import nahi ho saka — file Kharchaaa backup JSON honi chahiye.'); }
+    ev.target.value = '';
+  };
+  reader.readAsText(file);
+}
+function exportPDF(){
+  var rows = filteredHistory();
+  var g = grandTotals(data);
+  function fallback(){
+    var w = window.open('', '_blank');
+    if (!w){ alert('PDF ke liye popup allow karein, ya browser se Print > Save as PDF use karein.'); return; }
+    var html = '<h1>Kharchaaa — Poori History</h1><p>Kul Aya: ' + fmtMoney(g.aya, false) + ' | Kul Gaya: ' + fmtMoney(g.gaya, false) + ' | Kul Balance: ' + fmtMoney(g.balance, false) + '</p><table border="1" cellpadding="6" cellspacing="0"><tr><th>Date</th><th>List</th><th>Type</th><th>Category</th><th>Note</th><th>Amount</th></tr>' +
+      rows.map(function(e){ return '<tr><td>' + esc(e.date) + '</td><td>' + esc(e.listName) + '</td><td>' + esc(e.type) + '</td><td>' + esc(e.category) + '</td><td>' + esc(e.note) + '</td><td>' + esc(fmtMoney(e.amount, false)) + '</td></tr>'; }).join('') + '</table>';
+    w.document.write(html); w.document.close(); w.focus(); w.print();
+  }
+  try {
+    if (window.jspdf && window.jspdf.jsPDF){
+      var doc = new window.jspdf.jsPDF();
+      doc.setFontSize(16); doc.text('Kharchaaa — Poori History', 14, 16);
+      doc.setFontSize(11);
+      doc.text('Kul Aya: ' + fmtMoney(g.aya, false) + '   Kul Gaya: ' + fmtMoney(g.gaya, false) + '   Kul Balance: ' + fmtMoney(g.balance, false), 14, 25);
+      var y = 35;
+      rows.forEach(function(e){
+        if (y > 280){ doc.addPage(); y = 16; }
+        doc.text(e.date + '  |  ' + e.listName + '  |  ' + e.category + '  |  ' + (e.note || '') + '  |  ' + (e.type === 'aya' ? '+' : '-') + fmtMoney(e.amount, false), 14, y);
+        y += 7;
+      });
+      if (!rows.length){ doc.text('History khaali hai.', 14, y); }
+      /* AndroidBridge hook (assets copy only): same idea as downloadFile. */
+      if (window.AndroidBridge && window.AndroidBridge.downloadBase64){
+        try {
+          var b64 = doc.output('datauristring').split(',')[1];
+          window.AndroidBridge.downloadBase64('Kharchaaa_Poori_History.pdf', b64, 'application/pdf');
+        } catch (err2){ doc.save('Kharchaaa_Poori_History.pdf'); }
+      } else { doc.save('Kharchaaa_Poori_History.pdf'); }
+    } else { fallback(); }
+  } catch(err){ fallback(); }
+}
+
+/* ---------- Init ---------- */
+function applySettings(){
+  document.documentElement.setAttribute('data-theme', data.settings.theme || 'navy');
+  $('eyeBtn').textContent = data.settings.hideBalance ? '🙈 Balance' : '👁️ Balance';
+  document.querySelectorAll('.theme-card').forEach(function(c){ c.classList.toggle('sel', c.getAttribute('data-theme-name') === (data.settings.theme || 'navy')); });
+  syncSupportUI();
+}
+function renderAll(animate){
+  renderDashboard();
+  renderLists();
+  renderHistory();
+}
+function init(){
+  loadData();
+  applySettings();
+  $('eDate').value = todayStr();
+  fillCategorySelect();
+  renderAll();
+  if (getPin() && !unlocked){
+    $('pinOverlay').classList.remove('hidden');
+    setTimeout(function(){ var p = $('pinInput'); if (p) p.focus(); }, 100);
+  }
+  $('pinInput').addEventListener('keydown', function(ev){ if (ev.key === 'Enter') unlockApp(); });
+}
+if (typeof document !== 'undefined' && typeof window !== 'undefined'){
+  document.addEventListener('DOMContentLoaded', init);
+}
+</script>
+</body>
+</html>
