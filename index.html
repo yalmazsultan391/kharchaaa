@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="emerald">
+<html lang="en" data-theme="navy">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -293,10 +293,10 @@
       <div class="kv"><span>Version</span><b>3.0</b></div>
       <div class="kv"><span>Developer</span><b>Muhammad Abdullah Khalid</b></div>
       <div class="kv"><span>Team</span><b>ByteBuddy Devs</b></div>
-      <div class="kv"><span>Email</span><b>abdullahkhaliduk7@gmail.com</b></div>
+      <div class="kv"><span>Email</span><b>abdullahjoyiaofficial@gmail.com</b></div>
       <p style="margin-top:12px">Kharchaaa maine banayi hai taake aap apne paisay ka hisaab aasani se rakh sakein.</p>
       <div class="btn-row">
-        <a class="btn gold" style="text-decoration:none" href="mailto:abdullahkhaliduk7@gmail.com?subject=Kharchaaa%20Support">💬 Support</a>
+        <a class="btn gold" style="text-decoration:none" href="mailto:abdullahjoyiaofficial@gmail.com?subject=Kharchaaa%20Support">💬 Support</a>
         <button class="btn ghost" onclick="copyEmail()">📋 Email copy karein</button>
       </div>
       <p class="muted" id="copyMsg"></p>
@@ -306,8 +306,8 @@
       <h2>🎨 Theme</h2>
       <p class="muted">Apni pasand ka theme chunein — choice save ho jayegi.</p>
       <div class="theme-grid" id="themeGrid">
-        <button class="theme-card" data-theme-name="emerald" onclick="setTheme('emerald')"><div class="sw sw-emerald"></div><b>Emerald &amp; Gold</b><br><span class="muted">Default — naya theme</span></button>
-        <button class="theme-card" data-theme-name="navy" onclick="setTheme('navy')"><div class="sw sw-navy"></div><b>Royal Navy &amp; Gold</b><br><span class="muted">Classic premium</span></button>
+        <button class="theme-card" data-theme-name="emerald" onclick="setTheme('emerald')"><div class="sw sw-emerald"></div><b>Emerald &amp; Gold</b><br><span class="muted">Naya theme</span></button>
+        <button class="theme-card" data-theme-name="navy" onclick="setTheme('navy')"><div class="sw sw-navy"></div><b>Royal Navy &amp; Gold</b><br><span class="muted">Default — classic premium</span></button>
         <button class="theme-card" data-theme-name="violet" onclick="setTheme('violet')"><div class="sw sw-violet"></div><b>Midnight Violet</b><br><span class="muted">Geha violet</span></button>
         <button class="theme-card" data-theme-name="light" onclick="setTheme('light')"><div class="sw sw-light"></div><b>Light</b><br><span class="muted">Saaf aur halka</span></button>
       </div>
@@ -472,7 +472,7 @@ function migrateV2Data(v2){
     return { id: l.id || uid(), name: l.name || 'List', budget: 0,
       color: l.color || '#059669', entries: entries };
   });
-  return { lists: lists, settings: { theme: 'emerald', hideBalance: false, refreshAnim: 'Parchi' } };
+  return { lists: lists, settings: { theme: 'navy', hideBalance: false, refreshAnim: 'Parchi' } };
 }
 function seedData(){
   function dAgo(n){ return daysAgoStr(n); }
@@ -501,7 +501,7 @@ function seedData(){
         { id: uid(), type: 'gaya', amount: 3500, note: 'Shaadi shopping', category: 'Shopping', date: lastMonthDay(9) }
       ]}
     ],
-    settings: { theme: 'emerald', hideBalance: false, refreshAnim: 'Parchi' }
+    settings: { theme: 'navy', hideBalance: false, refreshAnim: 'Parchi' }
   };
 }
 
@@ -515,7 +515,7 @@ var unlocked = false;
 function loadData(){
   try {
     var raw = localStorage.getItem(V3_KEY);
-    if (raw){ data = JSON.parse(raw); if (!data.settings) data.settings = { theme:'emerald', hideBalance:false, refreshAnim:'Parchi' }; return; }
+    if (raw){ data = JSON.parse(raw); if (!data.settings) data.settings = { theme:'navy', hideBalance:false, refreshAnim:'Parchi' }; return; }
     var raw2 = localStorage.getItem(V2_KEY);
     if (raw2){
       try { var mig = migrateV2Data(JSON.parse(raw2)); if (mig && mig.lists.length){ data = mig; saveData(); return; } } catch(e){}
@@ -563,7 +563,7 @@ function syncSupportUI(){
   $('pinRemoveBtn').style.display = getPin() ? '' : 'none';
 }
 function copyEmail(){
-  var email = 'abdullahkhaliduk7@gmail.com';
+  var email = 'abdullahjoyiaofficial@gmail.com';
   function done(){ $('copyMsg').textContent = 'Email copy ho gaya: ' + email; }
   if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(email).then(done, function(){ $('copyMsg').textContent = 'Email: ' + email; }); }
   else { $('copyMsg').textContent = 'Email: ' + email; }
@@ -931,7 +931,7 @@ function importJSON(ev){
       if (!confirm(lists.length + ' lists import karein? Purana data replace ho jayega.')) return;
       var mig = migrateV2Data(parsed);
       data = mig && mig.lists ? { lists: mig.lists.map(function(l){ l.budget = Number(l.budget) || 0; return l; }), settings: data.settings } : data;
-      if (parsed.settings) data.settings = Object.assign({ theme: 'emerald', hideBalance: false, refreshAnim: 'Parchi' }, parsed.settings);
+      if (parsed.settings) data.settings = Object.assign({ theme: 'navy', hideBalance: false, refreshAnim: 'Parchi' }, parsed.settings);
       saveData(); applySettings(); renderAll();
       alert('Import ho gaya.');
     } catch(err){ alert('Import nahi ho saka — file Kharchaaa backup JSON honi chahiye.'); }
@@ -969,9 +969,9 @@ function exportPDF(){
 
 /* ---------- Init ---------- */
 function applySettings(){
-  document.documentElement.setAttribute('data-theme', data.settings.theme || 'emerald');
+  document.documentElement.setAttribute('data-theme', data.settings.theme || 'navy');
   $('eyeBtn').textContent = data.settings.hideBalance ? '🙈 Balance' : '👁️ Balance';
-  document.querySelectorAll('.theme-card').forEach(function(c){ c.classList.toggle('sel', c.getAttribute('data-theme-name') === (data.settings.theme || 'emerald')); });
+  document.querySelectorAll('.theme-card').forEach(function(c){ c.classList.toggle('sel', c.getAttribute('data-theme-name') === (data.settings.theme || 'navy')); });
   syncSupportUI();
 }
 function renderAll(animate){
