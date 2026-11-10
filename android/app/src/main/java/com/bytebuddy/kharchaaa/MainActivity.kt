@@ -25,7 +25,7 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
 import java.io.File
 import java.io.FileOutputStream
 
@@ -34,7 +34,7 @@ import java.io.FileOutputStream
  * All expense-tracking logic lives in the web app; this Activity only hosts it
  * and makes its file downloads (PDF / JSON / CSV) actually save on Android.
  */
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
     private lateinit var webView: WebView
     private var fileChooserCallback: ValueCallback<Array<Uri>>? = null
