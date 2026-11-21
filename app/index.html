@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Kharchaaa 2.0, Web App</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0A1931; color: #F1F5FB; }
+  a { color: #E8C766; }
+  button { font-family: inherit; cursor: pointer; }
+  input, select { font-family: inherit; }
+
+  .wrap { max-width: 560px; margin: 0 auto; padding: 0 14px 40px; }
+
+  /* Top bar */
+  .topbar { position: sticky; top: 0; z-index: 20; background: #0A1931; padding: 14px 14px 10px; border-bottom: 1px solid #26374D; }
+  .topbar-inner { max-width: 560px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .brand { font-size: 24px; font-weight: 800; letter-spacing: .5px; }
+  .brand span { color: #D4AF37; }
+  .userchip { display: flex; align-items: center; gap: 8px; background: #10233F; border: 1px solid #D4AF37; border-radius: 999px; padding: 5px 6px 5px 12px; font-size: 13px; font-weight: 700; color: #E8C766; }
+  .userchip button { background: #D4AF37; color: #0A1931; border: none; border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 800; }
+
+  .tabs { max-width: 560px; margin: 12px auto 0; display: flex; gap: 8px; }
+  .tabs button { flex: 1; background: #10233F; color: #D8E2F0; border: 1px solid #26374D; border-radius: 12px; padding: 11px 4px; font-size: 14px; font-weight: 700; }
+  .tabs button.active { background: #D4AF37; color: #0A1931; border-color: #D4AF37; }
+
+  /* Sync status bar */
+  .syncbar { max-width: 560px; margin: 8px auto 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12px; color: #91A2BA; }
+  .syncbtn { background: transparent; border: 1px solid #D4AF37; color: #E8C766; border-radius: 999px; padding: 5px 12px; font-size: 12px; font-weight: 800; }
+
+  /* Cards */
+  .card { background: #10233F; border: 1px solid #26374D; border-radius: 18px; padding: 18px; margin-top: 14px; }
+  .card.gold-border { border-color: #D4AF37; }
+  h2 { font-size: 20px; margin-bottom: 4px; }
+  h3 { font-size: 16px; color: #E8C766; margin-bottom: 10px; }
+  .muted { color: #91A2BA; font-size: 13px; line-height: 1.6; }
+  .row { display: flex; align-items: center; gap: 10px; }
+  .space { justify-content: space-between; }
+  .mt { margin-top: 14px; }
+
+  /* Balance cards */
+  .bal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .bal { background: linear-gradient(135deg, #0A1931, #1E3A5F); border: 1px solid #D4AF37; border-radius: 16px; padding: 14px; }
+  .bal .lbl { font-size: 11px; font-weight: 800; letter-spacing: .6px; color: #E8C766; text-transform: uppercase; }
+  .bal .amt { font-size: 22px; font-weight: 800; margin-top: 6px; }
+  .bal .sub { font-size: 12px; color: #D8E2F0; margin-top: 8px; line-height: 1.7; }
+  .bal .sub b { color: #fff; }
+  .aya { color: #7ED491; }
+  .gaya { color: #F0857A; }
+  .eye { background: none; border: 1px solid #26374D; border-radius: 10px; color: #E8C766; padding: 6px 10px; font-size: 12px; font-weight: 700; }
+
+  /* Forms */
+  label { display: block; font-size: 13px; font-weight: 700; color: #D8E2F0; margin: 12px 0 6px; }
+  input[type=text], input[type=number], input[type=date], select { width: 100%; background: #0A1931; border: 1px solid #26374D; border-radius: 12px; color: #F1F5FB; padding: 12px; font-size: 15px; outline: none; }
+  input:focus, select:focus { border-color: #D4AF37; }
+  .btn { display: inline-block; background: #D4AF37; color: #0A1931; border: none; border-radius: 999px; padding: 13px 26px; font-size: 15px; font-weight: 800; }
+  .btn:hover { background: #E8C766; }
+  .btn.ghost { background: transparent; color: #E8C766; border: 1px solid #D4AF37; }
+  .btn.danger { background: transparent; color: #F0857A; border: 1px solid #F0857A; }
+  .btn.small { padding: 8px 16px; font-size: 13px; }
+  .btn.block { width: 100%; text-align: center; }
+  .type-toggle { display: flex; gap: 8px; margin-top: 6px; }
+  .type-toggle button { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #26374D; background: #0A1931; color: #D8E2F0; font-size: 15px; font-weight: 800; }
+  .type-toggle button.on-aya { background: #1E5C33; border-color: #7ED491; color: #B9F0C6; }
+  .type-toggle button.on-gaya { background: #6E2A24; border-color: #F0857A; color: #F8C3BC; }
+
+  /* Lists */
+  .book { display: flex; align-items: center; gap: 12px; background: #10233F; border: 1px solid #26374D; border-radius: 16px; padding: 14px; margin-top: 10px; width: 100%; text-align: left; color: #F1F5FB; }
+  .book:active { border-color: #D4AF37; }
+  .avatar { width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #fff; overflow: hidden; border: 2px solid rgba(255,255,255,.25); }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .book .info { flex: 1; min-width: 0; }
+  .book .name { font-size: 16px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .book .tot { font-size: 13px; color: #D8E2F0; margin-top: 3px; }
+  .book .arrow { color: #D4AF37; font-size: 20px; font-weight: 800; }
+  .icon-btn { background: none; border: none; color: #F0857A; font-size: 18px; padding: 6px; }
+
+  .tx { background: #10233F; border: 1px solid #26374D; border-radius: 14px; padding: 12px 14px; margin-top: 8px; }
+  .tx .top { display: flex; justify-content: space-between; gap: 10px; }
+  .tx .note { font-size: 15px; font-weight: 700; word-break: break-word; }
+  .tx .amt { font-size: 15px; font-weight: 800; white-space: nowrap; }
+  .tx .meta { font-size: 12px; color: #91A2BA; margin-top: 5px; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px; margin-left: 6px; }
+  .tag.aya { background: #1E5C33; color: #B9F0C6; }
+  .tag.gaya { background: #6E2A24; color: #F8C3BC; }
+
+  .empty { text-align: center; color: #91A2BA; padding: 28px 12px; font-size: 14px; line-height: 1.7; }
+
+  .swatches { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .swatch { width: 34px; height: 34px; border-radius: 50%; border: 3px solid transparent; }
+  .swatch.sel { border-color: #fff; }
+  .photo-preview { width: 64px; height: 64px; border-radius: 14px; object-fit: cover; border: 2px solid #D4AF37; margin-top: 8px; display: none; }
+
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .filters select { flex: 1; min-width: 120px; }
+  .pill-row { display: flex; gap: 8px; margin-top: 12px; }
+  .pill-row button { flex: 1; padding: 10px 4px; border-radius: 999px; border: 1px solid #26374D; background: #0A1931; color: #D8E2F0; font-size: 13px; font-weight: 700; }
+  .pill-row button.on { background: #D4AF37; color: #0A1931; border-color: #D4AF37; }
+
+  canvas.chart { width: 100%; height: 220px; display: block; margin-top: 8px; }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: #D8E2F0; margin-top: 8px; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  .break-row { display: flex; justify-content: space-between; gap: 10px; padding: 9px 2px; border-bottom: 1px solid #26374D; font-size: 14px; }
+  .break-row:last-child { border-bottom: none; }
+  .break-row .dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 8px; }
+
+  .back { background: none; border: none; color: #E8C766; font-size: 15px; font-weight: 800; padding: 4px 0; }
+  .footer { text-align: center; color: #91A2BA; font-size: 12px; margin-top: 28px; line-height: 1.7; }
+
+  /* User screen */
+  .hero { text-align: center; padding: 44px 0 8px; }
+  .logo { width: 84px; height: 84px; border-radius: 22px; background: linear-gradient(135deg, #0A1931, #1E3A5F); border: 2px solid #D4AF37; color: #D4AF37; font-size: 44px; font-weight: 800; line-height: 80px; margin: 0 auto 16px; }
+  .hero h1 { font-size: 34px; }
+  .hero h1 span { color: #D4AF37; }
+  .hero p { color: #E8C766; margin-top: 6px; }
+  .user-btn { display: flex; justify-content: space-between; align-items: center; width: 100%; background: #10233F; border: 1px solid #26374D; color: #F1F5FB; border-radius: 14px; padding: 14px 16px; font-size: 16px; font-weight: 700; margin-top: 10px; text-align: left; }
+  .user-btn:active { border-color: #D4AF37; }
+  .user-btn small { color: #91A2BA; font-weight: 400; font-size: 12px; }
+
+  /* Print view: hidden on screen, only visible when printing */
+  #printView { display: none; }
+  @media print {
+    body { background: #fff !important; color: #000 !important; }
+    #app, .topbar { display: none !important; }
+    #printView { display: block !important; color: #000; font-family: Arial, sans-serif; padding: 10px; }
+    #printView h1 { font-size: 22px; margin-bottom: 4px; }
+    #printView h2 { font-size: 16px; margin: 14px 0 6px; }
+    #printView p { font-size: 13px; margin: 3px 0; }
+    #printView table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    #printView th, #printView td { border: 1px solid #999; padding: 6px 8px; text-align: left; }
+    #printView th { background: #eee; }
+    #printView .tot { font-weight: bold; }
+  }
+  @media (max-width: 380px) {
+    .bal .amt { font-size: 19px; }
+    .btn { padding: 12px 20px; }
+  }
+</style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="printView"></div>
+<script>
+
+'use strict';
+/* Kharchaaa 2.0 web app. Data stays in localStorage on this device, and syncs to the cloud (Supabase) per username, so the same account works on other devices too. */
+
+/* ---------- storage ---------- */
+var LS_USERS = 'kharchaaa_users';
+var LS_PREFIX = 'kharchaaa_';
+var currentUser = null;
+var data = { books: [], txs: [] };
+var view = { name: 'home', bookId: null };
+var hideBalance = false;
+var bookSearch = '';
+var histFilter = { type: 'all', book: 'all', month: 'all', q: '' };
+var newEntryType = false; /* false = Gaya, true = Aya */
+var newBookColor = '#1E3A5F';
+var newBookPhoto = '';
+var editEntryId = null;
+
+function loadUsers() {
+  try { return JSON.parse(localStorage.getItem(LS_USERS) || '[]'); }
+  catch (e) { return []; }
+}
+function saveUsers(list) {
+  localStorage.setItem(LS_USERS, JSON.stringify(list));
+}
+function userKey(name) { return LS_PREFIX + name; }
+function loadData() {
+  try {
+    var raw = localStorage.getItem(userKey(currentUser));
+    if (!raw) return { books: [], txs: [] };
+    var d = JSON.parse(raw);
+    return { books: d.books || [], txs: d.txs || [] };
+  } catch (e) { return { books: [], txs: [] }; }
+}
+function saveData() {
+  localStorage.setItem(userKey(currentUser), JSON.stringify(data));
+  if (currentUser && !syncBusy) {
+    syncMeta.localUpdatedAt = new Date().toISOString();
+    syncMeta.pending = true;
+    saveSyncMeta();
+    schedulePush();
+  }
+}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+
+/* ---------- cloud sync (Supabase) ---------- */
+/* Anon public key hai, publishable hai, web app mein embed karne ke liye hi hai. */
+var SB_URL = 'https://rhrgkwbcuzgrnxezcoqa.supabase.co/rest/v1/user_data';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJocmdrd2JjdXpncm54ZXpjb3FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyMzIwOTEsImV4cCI6MjExMDgwODA5MX0.tXCtcOG_XTik0jR6k3DljyG9PVOcNTAvU9hrHxUGxYE';
+var syncBusy = false;
+var syncTimer = null;
+var syncStatus = 'idle'; /* idle | syncing | synced | offline */
+var syncMeta = { lastSyncedAt: null, localUpdatedAt: null, pending: false };
+
+function syncMetaKey(name) { return 'kharchaaa_sync_' + name; }
+function loadSyncMeta() {
+  try {
+    var m = JSON.parse(localStorage.getItem(syncMetaKey(currentUser)) || '{}');
+    return { lastSyncedAt: m.lastSyncedAt || null, localUpdatedAt: m.localUpdatedAt || null, pending: !!m.pending };
+  } catch (e) { return { lastSyncedAt: null, localUpdatedAt: null, pending: false }; }
+}
+function saveSyncMeta() {
+  if (!currentUser) return;
+  localStorage.setItem(syncMetaKey(currentUser), JSON.stringify(syncMeta));
+}
+function sbHeaders(extra) {
+  var h = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
+  if (extra) for (var k in extra) h[k] = extra[k];
+  return h;
+}
+function sbFetchCloud(username) {
+  return fetch(SB_URL + '?username=eq.' + encodeURIComponent(username) + '&select=data,updated_at', { headers: sbHeaders() })
+    .then(function (r) { if (!r.ok) throw new Error('cloud read ' + r.status); return r.json(); })
+    .then(function (rows) { return (rows && rows.length) ? rows[0] : null; });
+}
+function sbPushCloud(username, stateObj, iso) {
+  return fetch(SB_URL, {
+    method: 'POST',
+    headers: sbHeaders({ 'Prefer': 'resolution=merge-duplicates' }),
+    body: JSON.stringify({ username: username, data: stateObj, updated_at: iso })
+  }).then(function (r) { if (!r.ok) throw new Error('cloud save ' + r.status); return r.json(); });
+}
+function syncStatusText() {
+  if (syncStatus === 'syncing') return 'Sync ho raha hai...';
+  if (syncStatus === 'synced') return 'Synced';
+  if (syncStatus === 'offline') return 'Offline, baad mein sync hoga';
+  return 'Sync tayyar hai';
+}
+function setSyncStatus(s) {
+  syncStatus = s;
+  var el = document.getElementById('syncStatus');
+  if (el) el.textContent = syncStatusText();
+}
+function schedulePush() {
+  if (syncTimer) clearTimeout(syncTimer);
+  syncTimer = setTimeout(function () { syncTimer = null; pushNow(); }, 1000);
+}
+function pushNow() {
+  if (!currentUser) return Promise.resolve(false);
+  setSyncStatus('syncing');
+  var iso = new Date().toISOString();
+  var snapshot = JSON.parse(JSON.stringify(data));
+  return sbPushCloud(currentUser, snapshot, iso).then(function () {
+    syncMeta.lastSyncedAt = iso;
+    syncMeta.localUpdatedAt = iso;
+    syncMeta.pending = false;
+    saveSyncMeta();
+    setSyncStatus('synced');
+    return true;
+  }).catch(function () {
+    syncMeta.pending = true;
+    saveSyncMeta();
+    setSyncStatus('offline');
+    return false;
+  });
+}
+function syncOnLogin(forcePush) {
+  if (!currentUser) return Promise.resolve(false);
+  syncBusy = true;
+  if (syncTimer) { clearTimeout(syncTimer); syncTimer = null; }
+  setSyncStatus('syncing');
+  var localTime = syncMeta.localUpdatedAt ? new Date(syncMeta.localUpdatedAt).getTime() : 0;
+  return sbFetchCloud(currentUser).then(function (row) {
+    if (row && row.data) {
+      var cloudTime = row.updated_at ? new Date(row.updated_at).getTime() : 0;
+      if (cloudTime > localTime) {
+        data = { books: (row.data.books || []), txs: (row.data.txs || []) };
+        syncMeta.lastSyncedAt = row.updated_at;
+        syncMeta.localUpdatedAt = row.updated_at;
+        syncMeta.pending = false;
+        saveSyncMeta();
+        saveData();
+        if (view.name === 'book' && !bookById(view.bookId)) view = { name: 'home', bookId: null };
+        render();
+      }
+    }
+    syncBusy = false;
+    if (forcePush || !row || syncMeta.pending) return pushNow();
+    setSyncStatus('synced');
+    return true;
+  }).catch(function () {
+    syncBusy = false;
+    syncMeta.pending = true;
+    saveSyncMeta();
+    setSyncStatus('offline');
+    return false;
+  });
+}
+function syncNow() {
+  if (!currentUser) return;
+  syncOnLogin(true);
+}
+
+/* ---------- utils ---------- */
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function fmt(n) {
+  n = Number(n) || 0;
+  return n.toLocaleString('en-US');
+}
+var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function fmtDate(iso) {
+  if (!iso) return '';
+  var p = iso.split('-');
+  if (p.length < 3) return iso;
+  return parseInt(p[2], 10) + ' ' + MONTHS[parseInt(p[1], 10) - 1] + ' ' + p[0];
+}
+function monthKey(iso) { return iso ? iso.slice(0, 7) : ''; }
+function monthLabel(key) {
+  if (!key) return '';
+  var p = key.split('-');
+  return MONTHS[parseInt(p[1], 10) - 1] + ' ' + p[0];
+}
+function todayISO() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function thisMonthKey() { return todayISO().slice(0, 7); }
+function bookById(id) {
+  for (var i = 0; i < data.books.length; i++) if (data.books[i].id === id) return data.books[i];
+  return null;
+}
+function totalsFor(bookId, month) {
+  var aya = 0, gaya = 0;
+  data.txs.forEach(function (t) {
+    if (bookId && t.bookId !== bookId) return;
+    if (month && monthKey(t.date) !== month) return;
+    if (t.income) aya += Number(t.amount) || 0; else gaya += Number(t.amount) || 0;
+  });
+  return { aya: aya, gaya: gaya, bal: aya - gaya };
+}
+function maskAmt(n) { return hideBalance ? '***' : fmt(n); }
+function eyeLabel() { return hideBalance ? 'Dikhao' : 'Chhupao'; }
+
+/* ---------- navigation ---------- */
+function go(name, bookId) {
+  view = { name: name, bookId: bookId || null };
+  if (name !== 'book') editEntryId = null;
+  render();
+  window.scrollTo(0, 0);
+}
+function selectUser(name) {
+  currentUser = name;
+  syncMeta = loadSyncMeta();
+  syncBusy = true;
+  data = loadData();
+  saveData();
+  view = { name: 'home', bookId: null };
+  render();
+  syncOnLogin();
+}
+function addUser() {
+  var input = document.getElementById('newUser');
+  var name = (input.value || '').trim();
+  if (!name) { alert('Pehle username likhein.'); return; }
+  if (/[^a-zA-Z0-9 _.-]/.test(name)) { alert('Username mein sirf letters, numbers, space, dot, dash ya underscore use karein.'); return; }
+  var users = loadUsers();
+  if (users.indexOf(name) === -1) { users.push(name); saveUsers(users); }
+  selectUser(name);
+}
+function switchUser() {
+  if (syncTimer) { clearTimeout(syncTimer); syncTimer = null; }
+  currentUser = null;
+  render();
+}
+
+/* ---------- books ---------- */
+var PALETTE = ['#1E3A5F', '#0A1931', '#D4AF37', '#2E7D32', '#8E24AA', '#C62828', '#1565C0', '#EF6C00', '#00897B', '#5D4037'];
+function setBookColor(c) { newBookColor = c; renderNewBookForm(); }
+function renderNewBookForm() {
+  var box = document.getElementById('newBookForm');
+  if (!box) return;
+  var prevName = '';
+  var prevInput = document.getElementById('bookName');
+  if (prevInput) prevName = prevInput.value;
+  var sw = PALETTE.map(function (c) {
+    return '<button type="button" class="swatch' + (newBookColor === c ? ' sel' : '') + '" style="background:' + c + '" onclick="setBookColor(\'' + c + '\')" aria-label="colour"></button>';
+  }).join('');
+  box.innerHTML =
+    '<label>Book ka naam</label>' +
+    '<input type="text" id="bookName" placeholder="Jaise: Ghar ka kharcha" maxlength="60" value="' + esc(prevName) + '">' +
+    '<label>Rang</label><div class="swatches">' + sw + '</div>' +
+    '<label>Photo (optional)</label>' +
+    '<input type="file" id="bookPhoto" accept="image/*" onchange="onPhotoPicked(this)">' +
+    (newBookPhoto ? '<img class="photo-preview" style="display:block" src="' + newBookPhoto + '" alt="book photo">' : '') +
+    '<div class="mt"><button class="btn block" onclick="addBook()">Book Banao</button></div>';
+}
+function onPhotoPicked(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    var img = new Image();
+    img.onload = function () {
+      var max = 200, w = img.width, h = img.height;
+      if (w > max || h > max) {
+        var r = Math.min(max / w, max / h);
+        w = Math.round(w * r); h = Math.round(h * r);
+      }
+      var cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      newBookPhoto = cv.toDataURL('image/jpeg', 0.8);
+      renderNewBookForm();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function addBook() {
+  var name = (document.getElementById('bookName').value || '').trim();
+  if (!name) { alert('Book ka naam likhein.'); return; }
+  data.books.push({ id: uid(), name: name, color: newBookColor, photo: newBookPhoto || '', created: todayISO() });
+  saveData();
+  newBookColor = '#1E3A5F'; newBookPhoto = '';
+  render();
+}
+function deleteBook(id, ev) {
+  if (ev) ev.stopPropagation();
+  var b = bookById(id);
+  if (!b) return;
+  var n = data.txs.filter(function (t) { return t.bookId === id; }).length;
+  if (!confirm('"' + b.name + '" delete kar dein? Is ki ' + n + ' entries bhi delete ho jayengi.')) return;
+  data.books = data.books.filter(function (x) { return x.id !== id; });
+  data.txs = data.txs.filter(function (t) { return t.bookId !== id; });
+  saveData();
+  render();
+}
+
+/* ---------- entries ---------- */
+function setEntryType(isAya) {
+  newEntryType = isAya;
+  var btns = document.querySelectorAll('.type-toggle button');
+  if (btns.length === 2) {
+    btns[0].className = isAya ? 'on-aya' : '';
+    btns[1].className = isAya ? '' : 'on-gaya';
+  }
+}
+function addEntry() {
+  var amt = Number((document.getElementById('entryAmount').value || '').replace(/,/g, ''));
+  var note = (document.getElementById('entryNote').value || '').trim();
+  var date = document.getElementById('entryDate').value || todayISO();
+  if (!amt || amt <= 0) { alert('Sahi amount likhein.'); return; }
+  if (!note) { alert('Note likhein, jaise: Sabzi, Bijli ka bill.'); return; }
+  data.txs.push({ id: uid(), bookId: view.bookId, income: newEntryType, amount: amt, note: note, date: date });
+  saveData();
+  newEntryType = false;
+  render();
+}
+function deleteEntry(id) {
+  var t = null;
+  data.txs.forEach(function (x) { if (x.id === id) t = x; });
+  if (!t) return;
+  if (!confirm('Ye entry delete kar dein? "' + t.note + '" (' + fmt(t.amount) + ')')) return;
+  data.txs = data.txs.filter(function (x) { return x.id !== id; });
+  saveData();
+  render();
+}
+function editEntry(id) {
+  editEntryId = id;
+  render();
+}
+function saveEditEntry() {
+  var t = null;
+  data.txs.forEach(function (x) { if (x.id === editEntryId) t = x; });
+  if (!t) return;
+  var amt = Number((document.getElementById('editAmount').value || '').replace(/,/g, ''));
+  var note = (document.getElementById('editNote').value || '').trim();
+  var date = document.getElementById('editDate').value || t.date;
+  if (!amt || amt <= 0) { alert('Sahi amount likhein.'); return; }
+  if (!note) { alert('Note likhein.'); return; }
+  t.amount = amt; t.note = note; t.date = date;
+  t.income = document.getElementById('editType').value === 'aya';
+  saveData();
+  editEntryId = null;
+  render();
+}
+function cancelEdit() { editEntryId = null; render(); }
+
+/* ---------- render: shell ---------- */
+function render() {
+  var app = document.getElementById('app');
+  if (!currentUser) { app.innerHTML = renderUserScreen(); return; }
+  var tabs =
+    '<div class="tabs">' +
+    '<button class="' + (view.name === 'home' ? 'active' : '') + '" onclick="go(\'home\')">Home</button>' +
+    '<button class="' + (view.name === 'history' ? 'active' : '') + '" onclick="go(\'history\')">History</button>' +
+    '<button class="' + (view.name === 'graphs' ? 'active' : '') + '" onclick="go(\'graphs\')">Graphs</button>' +
+    '</div>';
+  var top =
+    '<div class="topbar"><div class="topbar-inner">' +
+    '<div class="brand">Kharchaaa <span>2.0</span></div>' +
+    '<div class="userchip">' + esc(currentUser) + '<button onclick="switchUser()">Badlo</button></div>' +
+    '</div>' + tabs + '<div class="syncbar"><span id="syncStatus">' + esc(syncStatusText()) + '</span><button class="syncbtn" onclick="syncNow()">Sync Now</button></div></div>';
+  var body = '<div class="wrap">';
+  if (view.name === 'home') body += renderHome();
+  else if (view.name === 'book') body += renderBookDetail();
+  else if (view.name === 'history') body += renderHistory();
+  else if (view.name === 'graphs') body += renderGraphs();
+  body += '<div class="footer">By Muhammad Abdullah Khalid (ByteBuddy Devs)<br>Data is device par aur cloud mein sync hota hai.</div></div>';
+  app.innerHTML = top + body;
+  if (view.name === 'home') renderNewBookForm();
+  if (view.name === 'graphs') drawGraphs();
+  if (view.name === 'book') renderNewBookFormReset();
+}
+function renderNewBookFormReset() { /* form is static in book detail, nothing to reset */ }
+
+/* ---------- user screen ---------- */
+function renderUserScreen() {
+  var users = loadUsers();
+  var list = users.length ? users.map(function (u) {
+    var d = loadDataFor(u);
+    var nb = d.books.length, nt = d.txs.length;
+    return '<button class="user-btn" onclick="selectUser(\'' + esc(u).replace(/'/g, "\\'") + '\')"><span>' + esc(u) + '<br><small>' + nb + ' books, ' + nt + ' entries</small></span><span>&#8250;</span></button>';
+  }).join('') : '<p class="empty">Abhi koi user nahi hai.<br>Neeche apna username likh kar shuru karein.</p>';
+  return '<div class="wrap">' +
+    '<div class="hero"><div class="logo">K</div><h1>Kharchaaa <span>2.0</span></h1><p>Har rupaya, hisaab ke saath.</p></div>' +
+    '<div class="card gold-border"><h2>Apna username chunein</h2>' +
+    '<p class="muted">No password, no verification. Har username ka data bilkul alag rehta hai, aur cloud mein sync hota hai, taake doosre device par bhi mile.</p>' +
+    '<div class="mt">' + list + '</div>' +
+    '<label>Naya username</label>' +
+    '<input type="text" id="newUser" placeholder="Jaise: Yalmaz" maxlength="30">' +
+    '<div class="mt"><button class="btn block" onclick="addUser()">Shuru Karein</button></div>' +
+    '</div></div>';
+}
+function loadDataFor(u) {
+  try {
+    var raw = localStorage.getItem(userKey(u));
+    if (!raw) return { books: [], txs: [] };
+    var d = JSON.parse(raw);
+    return { books: d.books || [], txs: d.txs || [] };
+  } catch (e) { return { books: [], txs: [] }; }
+}
+
+/* ---------- home: books ---------- */
+function renderHome() {
+  var all = totalsFor(null, null);
+  var mon = totalsFor(null, thisMonthKey());
+  var q = bookSearch.toLowerCase();
+  var books = data.books.filter(function (b) { return !q || b.name.toLowerCase().indexOf(q) !== -1; });
+  var list = books.length ? books.map(function (b) {
+    var t = totalsFor(b.id, null);
+    var av = b.photo ? '<img src="' + b.photo + '" alt="">' : esc(b.name.charAt(0).toUpperCase());
+    return '<div style="display:flex;gap:8px;align-items:stretch">' +
+      '<button class="book" style="flex:1" onclick="go(\'book\',\'' + b.id + '\')">' +
+      '<span class="avatar" style="background:' + esc(b.color) + '">' + av + '</span>' +
+      '<span class="info"><span class="name">' + esc(b.name) + '</span>' +
+      '<span class="tot">Balance: ' + maskAmt(t.bal) + ' &nbsp;|&nbsp; Aya: ' + maskAmt(t.aya) + ' &nbsp;|&nbsp; Gaya: ' + maskAmt(t.gaya) + '</span></span>' +
+      '<span class="arrow">&#8250;</span></button>' +
+      '<button class="icon-btn" style="align-self:center" onclick="deleteBook(\'' + b.id + '\', event)" aria-label="delete">&#10005;</button>' +
+      '</div>';
+  }).join('') : '<p class="empty">Abhi koi book nahi hai.<br>Neeche se apni pehli book banayein.</p>';
+  return '<div class="bal-grid">' +
+    '<div class="bal"><div class="lbl">Total Balance, All-Time</div><div class="amt">' + maskAmt(all.bal) + '</div>' +
+    '<div class="sub"><span class="aya">Aya: ' + maskAmt(all.aya) + '</span><br><span class="gaya">Gaya: ' + maskAmt(all.gaya) + '</span></div></div>' +
+    '<div class="bal"><div class="lbl">Is Mahine Ka</div><div class="amt">' + maskAmt(mon.bal) + '</div>' +
+    '<div class="sub"><span class="aya">Aya: ' + maskAmt(mon.aya) + '</span><br><span class="gaya">Gaya: ' + maskAmt(mon.gaya) + '</span></div></div>' +
+    '</div>' +
+    '<div class="row space mt"><span class="muted">Balance chhupana ho to:</span><button class="eye" onclick="toggleHide()">' + eyeLabel() + '</button></div>' +
+    '<div class="card"><h2>Meri Books</h2>' +
+    '<input type="text" placeholder="Book dhoondein..." value="' + esc(bookSearch) + '" oninput="bookSearch=this.value; renderHomeOnly()">' +
+    '<div id="bookList">' + list + '</div></div>' +
+    '<div class="card"><h3>Nayi Book</h3><div id="newBookForm"></div></div>';
+}
+function renderHomeOnly() {
+  /* Re-render only the book list while typing, to keep focus in the search box. */
+  var q = bookSearch.toLowerCase();
+  var books = data.books.filter(function (b) { return !q || b.name.toLowerCase().indexOf(q) !== -1; });
+  var box = document.getElementById('bookList');
+  if (!box) return;
+  if (!books.length) { box.innerHTML = '<p class="empty">Koi book nahi mili.</p>'; return; }
+  box.innerHTML = books.map(function (b) {
+    var t = totalsFor(b.id, null);
+    var av = b.photo ? '<img src="' + b.photo + '" alt="">' : esc(b.name.charAt(0).toUpperCase());
+    return '<div style="display:flex;gap:8px;align-items:stretch">' +
+      '<button class="book" style="flex:1" onclick="go(\'book\',\'' + b.id + '\')">' +
+      '<span class="avatar" style="background:' + esc(b.color) + '">' + av + '</span>' +
+      '<span class="info"><span class="name">' + esc(b.name) + '</span>' +
+      '<span class="tot">Balance: ' + maskAmt(t.bal) + ' &nbsp;|&nbsp; Aya: ' + maskAmt(t.aya) + ' &nbsp;|&nbsp; Gaya: ' + maskAmt(t.gaya) + '</span></span>' +
+      '<span class="arrow">&#8250;</span></button>' +
+      '<button class="icon-btn" style="align-self:center" onclick="deleteBook(\'' + b.id + '\', event)" aria-label="delete">&#10005;</button>' +
+      '</div>';
+  }).join('');
+}
+function toggleHide() { hideBalance = !hideBalance; render(); }
+
+/* ---------- book detail ---------- */
+function renderBookDetail() {
+  var b = bookById(view.bookId);
+  if (!b) return '<p class="empty">Book nahi mili.</p>';
+  var all = totalsFor(b.id, null);
+  var mon = totalsFor(b.id, thisMonthKey());
+  var q = (document.getElementById('txSearch') ? document.getElementById('txSearch').value : '') || '';
+  q = q.toLowerCase();
+  var txs = data.txs.filter(function (t) { return t.bookId === b.id; })
+    .sort(function (a, c) { return c.date < a.date ? -1 : (c.date > a.date ? 1 : 0); });
+  var shown = txs.filter(function (t) { return !q || t.note.toLowerCase().indexOf(q) !== -1 || String(t.amount).indexOf(q) !== -1; });
+  var av = b.photo ? '<img src="' + b.photo + '" alt="">' : esc(b.name.charAt(0).toUpperCase());
+  var list = shown.length ? shown.map(function (t) {
+    if (editEntryId === t.id) {
+      return '<div class="tx"><label>Type</label><select id="editType"><option value="aya"' + (t.income ? ' selected' : '') + '>Aya</option><option value="gaya"' + (!t.income ? ' selected' : '') + '>Gaya</option></select>' +
+        '<label>Amount</label><input type="number" id="editAmount" value="' + t.amount + '">' +
+        '<label>Note</label><input type="text" id="editNote" value="' + esc(t.note) + '">' +
+        '<label>Date</label><input type="date" id="editDate" value="' + t.date + '">' +
+        '<div class="row mt"><button class="btn small" onclick="saveEditEntry()">Save Karein</button><button class="btn ghost small" onclick="cancelEdit()">Cancel</button></div></div>';
+    }
+    return '<div class="tx"><div class="top"><span class="note">' + esc(t.note) +
+      '<span class="tag ' + (t.income ? 'aya' : 'gaya') + '">' + (t.income ? 'Aya' : 'Gaya') + '</span></span>' +
+      '<span class="amt ' + (t.income ? 'aya' : 'gaya') + '">' + (t.income ? '+' : '-') + ' ' + maskAmt(t.amount) + '</span></div>' +
+      '<div class="meta">' + fmtDate(t.date) + '</div>' +
+      '<div class="row mt"><button class="btn ghost small" onclick="editEntry(\'' + t.id + '\')">Edit</button>' +
+      '<button class="btn danger small" onclick="deleteEntry(\'' + t.id + '\')">Delete</button></div></div>';
+  }).join('') : '<p class="empty">Abhi koi entry nahi hai.<br>Neeche se pehli Aya ya Gaya entry add karein.</p>';
+  return '<button class="back mt" onclick="go(\'home\')">&#8249; Wapas Books par</button>' +
+    '<div class="row mt"><span class="avatar" style="background:' + esc(b.color) + '">' + av + '</span><h2 style="flex:1">' + esc(b.name) + '</h2>' +
+    '<button class="icon-btn" onclick="deleteBook(\'' + b.id + '\')">&#10005;</button></div>' +
+    '<div class="bal-grid">' +
+    '<div class="bal"><div class="lbl">Total Balance, All-Time</div><div class="amt">' + maskAmt(all.bal) + '</div>' +
+    '<div class="sub"><span class="aya">Aya: ' + maskAmt(all.aya) + '</span><br><span class="gaya">Gaya: ' + maskAmt(all.gaya) + '</span></div></div>' +
+    '<div class="bal"><div class="lbl">Is Mahine Ka</div><div class="amt">' + maskAmt(mon.bal) + '</div>' +
+    '<div class="sub"><span class="aya">Aya: ' + maskAmt(mon.aya) + '</span><br><span class="gaya">Gaya: ' + maskAmt(mon.gaya) + '</span></div></div>' +
+    '</div>' +
+    '<div class="row space mt"><span class="muted">Balance chhupana ho to:</span><button class="eye" onclick="toggleHide()">' + eyeLabel() + '</button></div>' +
+    '<div class="card"><h3>Nayi Entry</h3>' +
+    '<div class="type-toggle"><button class="' + (newEntryType ? 'on-aya' : '') + '" onclick="setEntryType(true)">Aya</button>' +
+    '<button class="' + (!newEntryType ? 'on-gaya' : '') + '" onclick="setEntryType(false)">Gaya</button></div>' +
+    '<label>Amount</label><input type="number" id="entryAmount" placeholder="Jaise: 5000" inputmode="numeric">' +
+    '<label>Note</label><input type="text" id="entryNote" placeholder="Jaise: Salary, Sabzi, Bijli ka bill" maxlength="120">' +
+    '<label>Date</label><input type="date" id="entryDate" value="' + todayISO() + '">' +
+    '<div class="mt"><button class="btn block" onclick="addEntry()">Entry Add Karein</button></div></div>' +
+    '<div class="card"><h3>Entries (' + shown.length + ')</h3>' +
+    '<input type="text" id="txSearch" placeholder="Entry dhoondein..." value="' + esc(q) + '" oninput="renderBookDetailOnly()">' +
+    '<div class="row mt"><button class="btn ghost small" onclick="printStatement(\'book\')">PDF Download</button>' +
+    '<button class="btn ghost small" onclick="shareSummary(\'book\')">Share</button></div>' +
+    '<div id="txList">' + list + '</div></div>';
+}
+function renderBookDetailOnly() {
+  /* Re-render the entry list while typing, to keep focus in the search box. */
+  var b = bookById(view.bookId);
+  if (!b) return;
+  var q = (document.getElementById('txSearch').value || '').toLowerCase();
+  var txs = data.txs.filter(function (t) { return t.bookId === b.id; })
+    .sort(function (a, c) { return c.date < a.date ? -1 : (c.date > a.date ? 1 : 0); })
+    .filter(function (t) { return !q || t.note.toLowerCase().indexOf(q) !== -1 || String(t.amount).indexOf(q) !== -1; });
+  var box = document.getElementById('txList');
+  if (!box) return;
+  if (!txs.length) { box.innerHTML = '<p class="empty">Koi entry nahi mili.</p>'; return; }
+  box.innerHTML = txs.map(function (t) {
+    return '<div class="tx"><div class="top"><span class="note">' + esc(t.note) +
+      '<span class="tag ' + (t.income ? 'aya' : 'gaya') + '">' + (t.income ? 'Aya' : 'Gaya') + '</span></span>' +
+      '<span class="amt ' + (t.income ? 'aya' : 'gaya') + '">' + (t.income ? '+' : '-') + ' ' + maskAmt(t.amount) + '</span></div>' +
+      '<div class="meta">' + fmtDate(t.date) + '</div>' +
+      '<div class="row mt"><button class="btn ghost small" onclick="editEntry(\'' + t.id + '\')">Edit</button>' +
+      '<button class="btn danger small" onclick="deleteEntry(\'' + t.id + '\')">Delete</button></div></div>';
+  }).join('');
+}
+
+/* ---------- history ---------- */
+function monthOptions() {
+  var keys = {};
+  data.txs.forEach(function (t) { keys[monthKey(t.date)] = true; });
+  var list = Object.keys(keys).sort().reverse();
+  if (list.indexOf(thisMonthKey()) === -1) list.unshift(thisMonthKey());
+  return list;
+}
+function setHist(key, val) { histFilter[key] = val; render(); }
+function renderHistory() {
+  var f = histFilter;
+  var txs = data.txs.slice().sort(function (a, c) { return c.date < a.date ? -1 : (c.date > a.date ? 1 : 0); });
+  var filtered = txs.filter(function (t) {
+    if (f.type === 'aya' && !t.income) return false;
+    if (f.type === 'gaya' && t.income) return false;
+    if (f.book !== 'all' && t.bookId !== f.book) return false;
+    if (f.month !== 'all' && monthKey(t.date) !== f.month) return false;
+    if (f.q && t.note.toLowerCase().indexOf(f.q.toLowerCase()) === -1 && String(t.amount).indexOf(f.q) === -1) return false;
+    return true;
+  });
+  var aya = 0, gaya = 0;
+  filtered.forEach(function (t) { if (t.income) aya += Number(t.amount) || 0; else gaya += Number(t.amount) || 0; });
+  var bookOpts = '<option value="all">Sab books</option>' + data.books.map(function (b) {
+    return '<option value="' + b.id + '"' + (f.book === b.id ? ' selected' : '') + '>' + esc(b.name) + '</option>';
+  }).join('');
+  var monthOpts = '<option value="all">Sab months</option>' + monthOptions().map(function (k) {
+    return '<option value="' + k + '"' + (f.month === k ? ' selected' : '') + '>' + monthLabel(k) + '</option>';
+  }).join('');
+  var list = filtered.length ? filtered.map(function (t) {
+    var b = bookById(t.bookId);
+    return '<div class="tx"><div class="top"><span class="note">' + esc(t.note) +
+      '<span class="tag ' + (t.income ? 'aya' : 'gaya') + '">' + (t.income ? 'Aya' : 'Gaya') + '</span></span>' +
+      '<span class="amt ' + (t.income ? 'aya' : 'gaya') + '">' + (t.income ? '+' : '-') + ' ' + maskAmt(t.amount) + '</span></div>' +
+      '<div class="meta">' + fmtDate(t.date) + (b ? ' &nbsp;|&nbsp; ' + esc(b.name) : '') + '</div></div>';
+  }).join('') : '<p class="empty">Is filter mein koi entry nahi hai.</p>';
+  return '<div class="card"><h2>History</h2>' +
+    '<p class="muted">Sab books ki entries, filters ke saath.</p>' +
+    '<div class="pill-row">' +
+    '<button class="' + (f.type === 'all' ? 'on' : '') + '" onclick="setHist(\'type\',\'all\')">Sab</button>' +
+    '<button class="' + (f.type === 'aya' ? 'on' : '') + '" onclick="setHist(\'type\',\'aya\')">Aya</button>' +
+    '<button class="' + (f.type === 'gaya' ? 'on' : '') + '" onclick="setHist(\'type\',\'gaya\')">Gaya</button></div>' +
+    '<div class="filters"><select onchange="setHist(\'book\', this.value)">' + bookOpts + '</select>' +
+    '<select onchange="setHist(\'month\', this.value)">' + monthOpts + '</select></div>' +
+    '<div class="mt"><input type="text" placeholder="Search note ya amount..." value="' + esc(f.q) + '" oninput="histFilter.q=this.value; renderHistoryOnly()"></div>' +
+    '<div class="row mt"><button class="btn ghost small" onclick="printStatement(\'history\')">PDF Download</button>' +
+    '<button class="btn ghost small" onclick="shareSummary(\'history\')">Share</button></div></div>' +
+    '<div class="card"><h3>Monthly Totals (filtered)</h3>' +
+    '<div class="break-row"><span>Aya</span><b class="aya">' + maskAmt(aya) + '</b></div>' +
+    '<div class="break-row"><span>Gaya</span><b class="gaya">' + maskAmt(gaya) + '</b></div>' +
+    '<div class="break-row"><span>Balance</span><b>' + maskAmt(aya - gaya) + '</b></div></div>' +
+    '<div class="card"><h3>Entries (' + filtered.length + ')</h3><div id="histList">' + list + '</div></div>';
+}
+function renderHistoryOnly() {
+  var f = histFilter;
+  var txs = data.txs.slice().sort(function (a, c) { return c.date < a.date ? -1 : (c.date > a.date ? 1 : 0); });
+  var filtered = txs.filter(function (t) {
+    if (f.type === 'aya' && !t.income) return false;
+    if (f.type === 'gaya' && t.income) return false;
+    if (f.book !== 'all' && t.bookId !== f.book) return false;
+    if (f.month !== 'all' && monthKey(t.date) !== f.month) return false;
+    if (f.q && t.note.toLowerCase().indexOf(f.q.toLowerCase()) === -1 && String(t.amount).indexOf(f.q) === -1) return false;
+    return true;
+  });
+  var box = document.getElementById('histList');
+  if (!box) return;
+  if (!filtered.length) { box.innerHTML = '<p class="empty">Koi entry nahi mili.</p>'; return; }
+  box.innerHTML = filtered.map(function (t) {
+    var b = bookById(t.bookId);
+    return '<div class="tx"><div class="top"><span class="note">' + esc(t.note) +
+      '<span class="tag ' + (t.income ? 'aya' : 'gaya') + '">' + (t.income ? 'Aya' : 'Gaya') + '</span></span>' +
+      '<span class="amt ' + (t.income ? 'aya' : 'gaya') + '">' + (t.income ? '+' : '-') + ' ' + maskAmt(t.amount) + '</span></div>' +
+      '<div class="meta">' + fmtDate(t.date) + (b ? ' &nbsp;|&nbsp; ' + esc(b.name) : '') + '</div></div>';
+  }).join('');
+}
+
+/* ---------- graphs ---------- */
+function last6Months() {
+  var out = [];
+  var d = new Date();
+  d.setDate(1);
+  for (var i = 5; i >= 0; i--) {
+    var m = new Date(d.getFullYear(), d.getMonth() - i, 1);
+    out.push(m.getFullYear() + '-' + String(m.getMonth() + 1).padStart(2, '0'));
+  }
+  return out;
+}
+function drawBarChart(cv, labels, ayaData, gayaData) {
+  var ctx = cv.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var W = cv.clientWidth, H = 220;
+  cv.width = W * dpr; cv.height = H * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+  var max = 0;
+  ayaData.concat(gayaData).forEach(function (v) { if (v > max) max = v; });
+  if (max === 0) max = 1;
+  var padL = 8, padB = 26, padT = 10, chartH = H - padB - padT;
+  var slot = (W - padL * 2) / labels.length;
+  var bw = Math.min(16, slot / 3);
+  ctx.font = '11px sans-serif';
+  ctx.fillStyle = '#91A2BA';
+  ctx.textAlign = 'center';
+  labels.forEach(function (lb, i) {
+    var x = padL + slot * i + slot / 2;
+    var ah = (ayaData[i] / max) * chartH;
+    var gh = (gayaData[i] / max) * chartH;
+    ctx.fillStyle = '#7ED491';
+    ctx.fillRect(x - bw - 2, padT + chartH - ah, bw, ah);
+    ctx.fillStyle = '#F0857A';
+    ctx.fillRect(x + 2, padT + chartH - gh, bw, gh);
+    ctx.fillStyle = '#91A2BA';
+    ctx.fillText(lb, x, H - 8);
+  });
+}
+function drawLineChart(cv, labels, values) {
+  var ctx = cv.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var W = cv.clientWidth, H = 220;
+  cv.width = W * dpr; cv.height = H * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+  var min = 0, max = 0;
+  values.forEach(function (v) { if (v < min) min = v; if (v > max) max = v; });
+  if (max === min) max = min + 1;
+  var padL = 14, padR = 14, padB = 26, padT = 14;
+  var chartW = W - padL - padR, chartH = H - padB - padT;
+  function y(v) { return padT + chartH - ((v - min) / (max - min)) * chartH; }
+  ctx.strokeStyle = '#26374D';
+  ctx.beginPath(); ctx.moveTo(padL, y(0)); ctx.lineTo(W - padR, y(0)); ctx.stroke();
+  ctx.strokeStyle = '#D4AF37';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  values.forEach(function (v, i) {
+    var x = padL + (chartW * i) / (values.length - 1);
+    if (i === 0) ctx.moveTo(x, y(v)); else ctx.lineTo(x, y(v));
+  });
+  ctx.stroke();
+  ctx.fillStyle = '#D4AF37';
+  values.forEach(function (v, i) {
+    var x = padL + (chartW * i) / (values.length - 1);
+    ctx.beginPath(); ctx.arc(x, y(v), 4, 0, Math.PI * 2); ctx.fill();
+  });
+  ctx.font = '11px sans-serif';
+  ctx.fillStyle = '#91A2BA';
+  ctx.textAlign = 'center';
+  labels.forEach(function (lb, i) {
+    var x = padL + (chartW * i) / (values.length - 1);
+    ctx.fillText(lb, x, H - 8);
+  });
+}
+function drawBookBars(cv, labels, values, colors) {
+  var ctx = cv.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var W = cv.clientWidth, H = 220;
+  cv.width = W * dpr; cv.height = H * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+  var max = 0;
+  values.forEach(function (v) { if (Math.abs(v) > max) max = Math.abs(v); });
+  if (max === 0) max = 1;
+  var padL = 8, padB = 26, padT = 10, chartH = H - padB - padT;
+  var slot = (W - padL * 2) / Math.max(labels.length, 1);
+  var bw = Math.min(34, slot * 0.6);
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  labels.forEach(function (lb, i) {
+    var x = padL + slot * i + slot / 2;
+    var h = (Math.abs(values[i]) / max) * chartH;
+    ctx.fillStyle = colors[i] || '#D4AF37';
+    ctx.fillRect(x - bw / 2, padT + chartH - h, bw, h);
+    ctx.fillStyle = '#91A2BA';
+    ctx.fillText(lb.length > 10 ? lb.slice(0, 10) + '..' : lb, x, H - 8);
+  });
+}
+function renderGraphs() {
+  var months = last6Months();
+  var labels = months.map(function (k) { return monthLabel(k).split(' ')[0]; });
+  var ayaData = months.map(function (k) { return totalsFor(null, k).aya; });
+  var gayaData = months.map(function (k) { return totalsFor(null, k).gaya; });
+  var trend = [];
+  var cum = 0;
+  months.forEach(function (k) { var t = totalsFor(null, k); cum += t.bal; trend.push(cum); });
+  var bookRows = data.books.map(function (b) {
+    var t = totalsFor(b.id, null);
+    return { name: b.name, color: b.color, bal: t.bal, aya: t.aya, gaya: t.gaya };
+  }).sort(function (a, b) { return Math.abs(b.bal) - Math.abs(a.bal); });
+  var hasData = data.txs.length > 0;
+  var empty = hasData ? '' : '<p class="empty">Abhi koi entry nahi hai, is liye graphs khaali hain.<br>Home se pehli entry add karein.</p>';
+  var bookHtml = bookRows.length ? bookRows.map(function (r) {
+    return '<div class="break-row"><span><span class="dot" style="background:' + esc(r.color) + '"></span>' + esc(r.name) + '</span>' +
+      '<span><b>' + maskAmt(r.bal) + '</b> <span class="muted">(Aya ' + maskAmt(r.aya) + ', Gaya ' + maskAmt(r.gaya) + ')</span></span></div>';
+  }).join('') : '<p class="empty">Koi book nahi hai.</p>';
+  return '<div class="card"><h2>Graphs</h2><p class="muted">Pichle 6 months ka hisaab.</p>' + empty +
+    '<h3 class="mt">Aya vs Gaya, pichle 6 months</h3>' +
+    '<canvas class="chart" id="chartBars"></canvas>' +
+    '<div class="legend"><span><i style="background:#7ED491"></i>Aya</span><span><i style="background:#F0857A"></i>Gaya</span></div>' +
+    '<h3 class="mt">Balance trend</h3>' +
+    '<canvas class="chart" id="chartTrend"></canvas>' +
+    '<div class="legend"><span><i style="background:#D4AF37"></i>Total balance, month ke end par</span></div>' +
+    '<h3 class="mt">Per-book breakdown</h3>' +
+    '<canvas class="chart" id="chartBooks"></canvas>' +
+    '<div class="mt">' + bookHtml + '</div></div>';
+}
+function drawGraphs() {
+  var months = last6Months();
+  var labels = months.map(function (k) { return monthLabel(k).split(' ')[0]; });
+  var ayaData = months.map(function (k) { return totalsFor(null, k).aya; });
+  var gayaData = months.map(function (k) { return totalsFor(null, k).gaya; });
+  var trend = [];
+  var cum = 0;
+  months.forEach(function (k) { var t = totalsFor(null, k); cum += t.bal; trend.push(cum); });
+  var bookRows = data.books.map(function (b) {
+    var t = totalsFor(b.id, null);
+    return { name: b.name, color: b.color, bal: t.bal };
+  }).sort(function (a, b) { return Math.abs(b.bal) - Math.abs(a.bal); });
+  var cb = document.getElementById('chartBars');
+  var ct = document.getElementById('chartTrend');
+  var cbook = document.getElementById('chartBooks');
+  if (cb) drawBarChart(cb, labels, ayaData, gayaData);
+  if (ct) drawLineChart(ct, labels, trend);
+  if (cbook) drawBookBars(cbook, bookRows.map(function (r) { return r.name; }), bookRows.map(function (r) { return r.bal; }), bookRows.map(function (r) { return r.color; }));
+}
+
+/* ---------- print (PDF) and share ---------- */
+function statementRows(scope) {
+  var txs;
+  var title;
+  if (scope === 'book') {
+    var b = bookById(view.bookId);
+    title = 'Book: ' + (b ? b.name : '');
+    txs = data.txs.filter(function (t) { return t.bookId === view.bookId; });
+  } else {
+    title = 'History: Sab Books';
+    txs = data.txs.slice();
+    var f = histFilter;
+    txs = txs.filter(function (t) {
+      if (f.type === 'aya' && !t.income) return false;
+      if (f.type === 'gaya' && t.income) return false;
+      if (f.book !== 'all' && t.bookId !== f.book) return false;
+      if (f.month !== 'all' && monthKey(t.date) !== f.month) return false;
+      return true;
+    });
+  }
+  txs.sort(function (a, c) { return a.date < c.date ? -1 : (a.date > c.date ? 1 : 0); });
+  return { title: title, txs: txs };
+}
+function printStatement(scope) {
+  var s = statementRows(scope);
+  var aya = 0, gaya = 0;
+  s.txs.forEach(function (t) { if (t.income) aya += Number(t.amount) || 0; else gaya += Number(t.amount) || 0; });
+  var rows = s.txs.map(function (t) {
+    var b = bookById(t.bookId);
+    return '<tr><td>' + fmtDate(t.date) + '</td><td>' + esc(t.note) + '</td><td>' + (b ? esc(b.name) : '') + '</td><td>' + (t.income ? 'Aya' : 'Gaya') + '</td><td>' + fmt(t.amount) + '</td></tr>';
+  }).join('');
+  var pv = document.getElementById('printView');
+  pv.innerHTML =
+    '<h1>Kharchaaa 2.0</h1>' +
+    '<p>User: ' + esc(currentUser) + ' &nbsp;|&nbsp; Date: ' + fmtDate(todayISO()) + '</p>' +
+    '<h2>' + esc(s.title) + '</h2>' +
+    '<table><tr><th>Date</th><th>Note</th><th>Book</th><th>Type</th><th>Amount</th></tr>' + rows + '</table>' +
+    '<p class="tot">Total Aya: ' + fmt(aya) + '</p>' +
+    '<p class="tot">Total Gaya: ' + fmt(gaya) + '</p>' +
+    '<p class="tot">Balance: ' + fmt(aya - gaya) + '</p>';
+  window.print();
+}
+function shareSummary(scope) {
+  var s = statementRows(scope);
+  var aya = 0, gaya = 0;
+  s.txs.forEach(function (t) { if (t.income) aya += Number(t.amount) || 0; else gaya += Number(t.amount) || 0; });
+  var text = 'Kharchaaa 2.0, ' + s.title + '\nUser: ' + currentUser +
+    '\nTotal Aya: ' + fmt(aya) + '\nTotal Gaya: ' + fmt(gaya) + '\nBalance: ' + fmt(aya - gaya) +
+    '\nEntries: ' + s.txs.length;
+  if (navigator.share) {
+    navigator.share({ title: 'Kharchaaa 2.0', text: text }).catch(function () {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function () { alert('Summary copy ho gaya.'); });
+  } else {
+    alert(text);
+  }
+}
+
+/* ---------- init ---------- */
+window.addEventListener('online', function () {
+  if (currentUser && syncMeta && syncMeta.pending) pushNow();
+});
+render();
+</script>
+</body>
+</html>
